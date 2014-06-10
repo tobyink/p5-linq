@@ -1,0 +1,19 @@
+# This file contains general metadata about the project.
+
+@prefix : <http://usefulinc.com/ns/doap#>.
+
+`LINQ`
+	:programming-language "Perl" ;
+	:shortdesc            "an interpretation of Microsoft's Language Integrated Query";
+	:homepage             <https://metacpan.org/release/LINQ>;
+	:download-page        <https://metacpan.org/release/LINQ>;
+	:bug-database         <http://rt.cpan.org/Dist/Display.html?Queue=LINQ>;
+#	:repository           [ a :GitRepository; :browse <https://github.com/tobyink/p5-linq> ];
+	:created              2014-06-10;
+	:license              <http://dev.perl.org/licenses/>;
+	:maintainer           cpan:TOBYINK;
+	:developer            cpan:TOBYINK.
+
+<http://dev.perl.org/licenses/>
+	dc:title  "the same terms as the perl 5 programming language system itself".
+

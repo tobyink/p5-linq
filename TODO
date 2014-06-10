@@ -1,0 +1,40 @@
+Methods:
+- DefaultIfEmpty
+- ElementAtOrDefault
+- Zip ??
+
+Classes:
+- LINQ::Iterator
+- LINQ::DBI
+- LINQ::LibXML
+
+Test suite:
+- Join
+- GroupJoin
+- OfType
+- Concat
+- OrderBy
+- OrderByDescending
+- Reverse
+- GroupBy
+- Distinct
+- Union
+- Intersect
+- Except
+- SequenceEqual
+- First
+- FirstOrDefault
+- Last
+- LastOrDefault
+- Single
+- SingleOrDefault
+- ElementAt
+- Any
+- All
+- Contains
+- Count
+- ToArray
+- ToList
+- ToDictionary
+- ToLookup
+- Cast
