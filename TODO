@@ -1,7 +1,6 @@
 Methods:
 - DefaultIfEmpty
 - ElementAtOrDefault
-- Zip ??
 
 Classes:
 - LINQ::Iterator
@@ -38,3 +37,4 @@ Test suite:
 - ToDictionary
 - ToLookup
 - Cast
+- Zip

@@ -543,12 +543,10 @@ sub of_type {
 		);
 	}
 	
-	if ($type->isa('Type::Tiny'))
-	{
+	if ($type->isa('Type::Tiny')) {
 		my $check = $type->compiled_check;
 		
-		if ($type->has_coercion)
-		{
+		if ($type->has_coercion) {
 			my $coercion = $type->coercion->compiled_coercion;
 			return $self->select($coercion)->where($check);
 		}
@@ -556,14 +554,29 @@ sub of_type {
 		return $self->where($check);
 	}
 	
-	if ($type->has_coercion)
-	{
+	if ($type->has_coercion) {
 		return $self
 			->select(sub { $type->coerce($_) })
 			->where(sub { $type->check($_) });
 	}
 	
 	return $self->where(sub { $type->check($_) });
+}
+
+sub zip {
+	my $self  = shift;
+	my $other = shift;
+	my $map   = $_assert_code->(@_);
+	
+	my @self  = $self->to_list;
+	my @other = $other->to_list;
+	my @results;
+	
+	while (@self and @other) {
+		push @results, scalar $map->(shift(@self), shift(@other));
+	}
+	
+	$self->$_create_linq(\@results);
 }
 
 1;
