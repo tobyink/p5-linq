@@ -3,7 +3,7 @@ Methods:
 - ElementAtOrDefault
 
 Classes:
-- LINQ::Iterator
+- LINQ::Iterator (and use this to implement LINQ::Range and LINQ::Repeat)
 - LINQ::DBI
 - LINQ::LibXML
 
