@@ -31,7 +31,6 @@ Test suite:
 - Any
 - All
 - Contains
-- Count
 - ToArray
 - ToList
 - ToDictionary

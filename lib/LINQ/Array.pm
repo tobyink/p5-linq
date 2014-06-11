@@ -16,6 +16,7 @@ sub new {
 
 sub count {
 	my $self = shift;
+	return $self->where(@_)->count if @_;
 	scalar @{ $self->array };
 }
 
