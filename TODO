@@ -8,8 +8,6 @@ Classes:
 - LINQ::LibXML
 
 Test suite:
-- Join
-- GroupJoin
 - OfType
 - Concat
 - OrderBy
