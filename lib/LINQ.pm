@@ -9,11 +9,19 @@ our $VERSION   = '0.001';
 
 use Exporter::Shiny qw( LINQ );
 
+our $FORCE_ITERATOR;
+
 sub LINQ ($) {
 	my $data = shift;
 	my $ref  = ref($data);
 	
 	if ($ref eq 'ARRAY') {
+		if ($FORCE_ITERATOR) {
+			my @data = @$data;
+			require LINQ::Iterator;
+			return LINQ::Iterator::->new(sub { @data ? shift(@data) : () });
+		}
+		
 		require LINQ::Array;
 		return LINQ::Array::->new($data);
 	}
