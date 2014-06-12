@@ -25,6 +25,12 @@ sub to_list {
 	@{ $self->array };
 }
 
+sub element_at {
+	my $self = shift;
+	my ($n) = @_;
+	$self->array->[$n];
+}
+
 sub target_class {
 	__PACKAGE__;
 }
