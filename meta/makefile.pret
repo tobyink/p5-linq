@@ -3,7 +3,13 @@
 @prefix : <http://ontologi.es/doap-deps#>.
 
 `LINQ`
-	:test-requirement       [ :on "Test::More 0.96"^^:CpanId ];
-	:develop-recommendation [ :on "Dist::Inkt 0.001"^^:CpanId ];
+	:runtime-requirement    [ :on "Class::Tiny 0.005"^^:CpanId ];
+	:runtime-requirement    [ :on "Exporter::Shiny"^^:CpanId ];
+	:runtime-requirement    [ :on "List::Util 1.35"^^:CpanId ];
+	:runtime-requirement    [ :on "parent 0.224"^^:CpanId ];
+	:runtime-requirement    [ :on "Role::Tiny 1.003003"^^:CpanId ];
+	:test-requirement       [ :on "Test::Modern 0.007"^^:CpanId ];
+	:test-recommendation    [ :on "Types::Standard"^^:CpanId ];
+	:develop-recommendation [ :on "Dist::Inkt::Profile::TOBYINK"^^:CpanId ];
 	.
 
