@@ -210,7 +210,7 @@ sub join {
 sub group_join {
 	my ($x_mapped, $y_mapped, $hint, $joiner) = $_prepare_join->(@_);
 	
-	$hint =~ /\A-(right|outer)\z/ or $_throw->(
+	$hint =~ /\A-(left|inner)\z/ or $_throw->(
 		"CallerError",
 		message => "Join type '$hint' not supported for group_join",
 	);
@@ -221,7 +221,7 @@ sub group_join {
 	for my $Xi (0 .. $#$x_mapped)
 	{
 		my $X = $x_mapped->[$Xi];
-		my @group = map $X->[0] eq $_->[0], @$y_mapped;
+		my @group = map $_->[1], grep $X->[0] eq $_->[0], @$y_mapped;
 		
 		if (@group or $hint eq -left)
 		{
