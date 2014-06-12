@@ -26,8 +26,6 @@ Test suite:
 - Single
 - SingleOrDefault
 - ElementAt
-- Any
-- All
 - Contains
 - ToArray
 - ToList
