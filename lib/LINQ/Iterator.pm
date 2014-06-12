@@ -17,23 +17,32 @@ sub new {
 	$class->SUPER::new(@_);
 }
 
-sub to_list {
+sub _fetch {
 	my $self = shift;
 	my $iter = $self->_iterator;
 	
-	unless ($self->_exhausted) {
-		while (1) {
-			my @got = $iter->();
-			if (@got) {
-				push @{ $self->_cached }, @got;
-			}
-			else {
-				$self->_exhausted(1);
-				last;
-			}
+	return if $self->_exhausted;
+	
+	my @got = $iter->();
+	if (@got) {
+		my $got = shift(@got);
+		if (@got) {
+			require LINQ::Exception;
+			'LINQ::Exception::CallerError'->throw(
+				message => "Iterator coderef returned more than one value in list context",
+			);
 		}
+		push @{ $self->_cached }, $got;
+		return \$got;
 	}
 	
+	$self->_exhausted(1);
+	return;
+}
+
+sub to_list {
+	my $self = shift;
+	1 while $self->_fetch;
 	return @{ $self->_cached };
 }
 
