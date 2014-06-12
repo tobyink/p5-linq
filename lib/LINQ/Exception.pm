@@ -88,6 +88,7 @@ use warnings;
 {
 	package LINQ::Exception::Cast;
 	use parent -norequire, qw( LINQ::Exception::CollectionError );
+	use Class::Tiny qw( type );
 	sub message {
 		my $type = shift->type;
 		"Not all elements in the collection could be cast to $type";
