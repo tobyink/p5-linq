@@ -3,9 +3,20 @@ Methods:
 - ElementAtOrDefault
 
 Classes:
-- LINQ::Iterator (and use this to implement LINQ::Range and LINQ::Repeat)
 - LINQ::DBI
 - LINQ::LibXML
+
+Optimization:
+- LINQ::Iterator->select
+- LINQ::Iterator->where
+- LINQ::Iterator->select_many
+- LINQ::Iterator->element_at
+- LINQ::Iterator->first
+- LINQ::Iterator->zip
+- LINQ::Collection->any
+
+Features:
+- LINQ::Collection->to_array ought to return a tied array pointing back to the collection
 
 Test suite:
 - Concat
