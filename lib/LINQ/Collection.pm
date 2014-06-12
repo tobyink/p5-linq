@@ -420,8 +420,23 @@ my $_with_default = sub
 	
 	my $return;
 	eval { $return = $self->$method(@args); 1 }
-		? $return
-		: $default;
+	or do {
+		my $e = $@; # catch
+		
+		# Rethrow any non-blessed errors.
+		require Scalar::Util;
+		die($e) unless Scalar::Util::blessed($e);
+		
+		# Rethrow any errors of the wrong class.
+		die($e) unless $e->isa('LINQ::Exception::NotFound') || $e->isa('LINQ::Exception::MultipleFound');
+		
+		# Rethrow any errors which resulted from the wrong source.
+		die($e) unless $e->collection == $self;
+		
+		return $default;
+	};
+	
+	return $return;
 };
 
 sub first {
