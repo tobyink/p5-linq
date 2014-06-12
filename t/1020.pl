@@ -20,7 +20,12 @@ for my $file ( path("t")->children )
 		elsif (!$pod_line and /\A=head1/ and not /PURPOSE/)
 		{
 			$pod_line++;
-			("This test runs against LINQ::Iterator rather than LINQ::Array.\n\n", $_);
+			(
+				"This test is based on ${\ $file->basename } but runs tests against\n",
+				"L<LINQ::Iterator> rather than L<LINQ::Array>.\n",
+				"\n",
+				$_,
+			);
 		}
 		else
 		{

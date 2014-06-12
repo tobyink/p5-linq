@@ -6,6 +6,10 @@
 
 Test LINQ C<of_type> method.
 
+=head1 DEPENDENCIES
+
+This test requires L<Types::Standard>. It will be skipped otherwise.
+
 =head1 AUTHOR
 
 Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
@@ -19,10 +23,7 @@ the same terms as the Perl 5 programming language system itself.
 
 =cut
 
-use strict;
-use warnings;
 use Test::Modern -requires => { 'Types::Standard' => 0 };
-
 use LINQ qw( LINQ );
 use Types::Standard -types;
 

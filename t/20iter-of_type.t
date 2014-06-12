@@ -6,7 +6,12 @@
 
 Test LINQ C<of_type> method.
 
-This test runs against LINQ::Iterator rather than LINQ::Array.
+This test is based on 10array-of_type.t but runs tests against
+L<LINQ::Iterator> rather than L<LINQ::Array>.
+
+=head1 DEPENDENCIES
+
+This test requires L<Types::Standard>. It will be skipped otherwise.
 
 =head1 AUTHOR
 
@@ -23,10 +28,7 @@ the same terms as the Perl 5 programming language system itself.
 
 BEGIN { $LINQ::FORCE_ITERATOR = 1 }
 
-use strict;
-use warnings;
 use Test::Modern -requires => { 'Types::Standard' => 0 };
-
 use LINQ qw( LINQ );
 use Types::Standard -types;
 

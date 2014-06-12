@@ -6,7 +6,8 @@
 
 Test LINQ C<count> method.
 
-This test runs against LINQ::Iterator rather than LINQ::Array.
+This test is based on 10array-count.t but runs tests against
+L<LINQ::Iterator> rather than L<LINQ::Array>.
 
 =head1 AUTHOR
 
@@ -23,10 +24,7 @@ the same terms as the Perl 5 programming language system itself.
 
 BEGIN { $LINQ::FORCE_ITERATOR = 1 }
 
-use strict;
-use warnings;
 use Test::Modern;
-
 use LINQ qw( LINQ );
 
 is(

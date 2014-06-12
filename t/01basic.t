@@ -19,8 +19,6 @@ the same terms as the Perl 5 programming language system itself.
 
 =cut
 
-use strict;
-use warnings;
 use Test::Modern qw( use_ok done_testing );
 
 use_ok('LINQ');
