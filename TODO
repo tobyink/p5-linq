@@ -24,9 +24,6 @@ Test suite:
 - Reverse
 - GroupBy
 - Distinct
-- Union
-- Intersect
-- Except
 - SequenceEqual
 - ElementAt
 - Contains
