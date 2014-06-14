@@ -1,0 +1,21 @@
+language: perl
+perl:
+  - "5.20.0"
+  - "5.18"
+  - "5.16"
+  - "5.14"
+  - "5.12"
+  - "5.10"
+  - "5.8.9"
+  - "5.8.3"
+  - "5.8.1"
+before_install:
+  - "source devel.travis/travis-perlbrew"
+  - "perlbrew install-cpanm -f"
+  - "perl -V"
+install:
+  - "cpanm parent List::Util"
+  - "cpanm Class::Tiny Exporter::Tiny Role::Tiny"
+  - "cpanm Test::Modern Types::Standard"
+script:
+  - "HARNESS_IS_VERBOSE=1 prove -Ilib t"
