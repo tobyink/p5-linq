@@ -1,21 +1,33 @@
 language: perl
 perl:
+  - "blead"
   - "5.20.0"
-  - "5.18"
+  - "5.18.2_thr"
   - "5.16"
   - "5.14"
   - "5.12"
   - "5.10"
+  - "5.8.9_thr"
   - "5.8.9"
   - "5.8.3"
   - "5.8.1"
+matrix:
+  include:
+    - perl: 5.18.2
+      env: COVERAGE=1         # enables coverage+coveralls reporting
 before_install:
-  - "source devel.travis/travis-perlbrew"
-  - "perlbrew install-cpanm -f"
-  - "perl -V"
+  - git clone git://github.com/tobyink/perl-travis-helper
+  - source perl-travis-helper/init
+  - build-perl
+  - perl -V
+  - build-dist
+  - cd $BUILD_DIR             # $BUILD_DIR is set by the build-dist command
 install:
-  - "cpanm parent List::Util"
-  - "cpanm Class::Tiny Exporter::Tiny Role::Tiny"
-  - "cpanm Test::Modern Types::Standard"
+  - cpan-install --deps       # installs prereqs, including recommends
+  - cpan-install --coverage   # installs converage prereqs, if enabled
+before_script:
+  - coverage-setup
 script:
-  - "HARNESS_IS_VERBOSE=1 prove -Ilib t"
+  - prove -l -j$((SYSTEM_CORES + 1)) $(test-dirs)   # parallel testing
+after_success:
+  - coverage-report
