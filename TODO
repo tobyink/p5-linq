@@ -19,7 +19,6 @@ Features:
 - LINQ::Collection->to_array ought to return a tied array pointing back to the collection
 
 Test suite:
-- Distinct
 - SequenceEqual
 - ElementAt
 - Contains
