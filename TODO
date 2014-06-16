@@ -26,4 +26,3 @@ Test suite:
 - ToList
 - ToDictionary
 - ToLookup
-- Zip
