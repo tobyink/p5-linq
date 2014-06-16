@@ -2,6 +2,10 @@ use 5.006;
 use strict;
 use warnings;
 
+if ($] < 5.010000) {
+	require UNIVERSAL::DOES;
+}
+
 package LINQ::Iterator;
 
 use Class::Tiny qw( _iterator _cached _exhausted );
