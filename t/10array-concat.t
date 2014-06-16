@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<concat> method.
+Test the C<concat> method of L<LINQ::Array>.
 
 =head1 AUTHOR
 

@@ -4,10 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<order_by> method.
-
-This test is based on 10array-order_by.t but runs tests against
-L<LINQ::Iterator> rather than L<LINQ::Array>.
+Test the C<order_by> method of L<LINQ::Iterator>.
 
 =head1 AUTHOR
 

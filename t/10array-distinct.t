@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<distinct> method.
+Test the C<distinct> method of L<LINQ::Array>.
 
 =head1 AUTHOR
 

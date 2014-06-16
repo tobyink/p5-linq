@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<first> method.
+Test the C<first> method of L<LINQ::Array>.
 
 =head1 AUTHOR
 

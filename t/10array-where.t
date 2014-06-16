@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<where> method.
+Test the C<where> method of L<LINQ::Array>.
 
 =head1 AUTHOR
 

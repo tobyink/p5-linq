@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<select_many> method.
+Test the C<select_many> method of L<LINQ::Array>.
 
 =head1 AUTHOR
 

@@ -4,10 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<order_by_descending> method.
-
-This test is based on 10array-order_by_descending.t but runs tests against
-L<LINQ::Iterator> rather than L<LINQ::Array>.
+Test the C<order_by_descending> method of L<LINQ::Iterator>.
 
 =head1 AUTHOR
 

@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<order_by_descending> method.
+Test the C<order_by_descending> method of L<LINQ::Array>.
 
 =head1 AUTHOR
 

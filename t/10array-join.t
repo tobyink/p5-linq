@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<join> method.
+Test the C<join> method of L<LINQ::Array>.
 
 =head1 AUTHOR
 

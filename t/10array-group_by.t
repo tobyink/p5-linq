@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<group_by> method.
+Test the C<group_by> method of L<LINQ::Array>.
 
 =head1 AUTHOR
 

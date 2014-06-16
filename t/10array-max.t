@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<max> method.
+Test the C<max> method of L<LINQ::Array>.
 
 =head1 AUTHOR
 

@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<skip> method.
+Test the C<skip> method of L<LINQ::Array>.
 
 =head1 AUTHOR
 

@@ -4,10 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<sum> method.
-
-This test is based on 10array-sum.t but runs tests against
-L<LINQ::Iterator> rather than L<LINQ::Array>.
+Test the C<sum> method of L<LINQ::Iterator>.
 
 =head1 AUTHOR
 

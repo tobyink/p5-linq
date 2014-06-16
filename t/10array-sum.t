@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<sum> method.
+Test the C<sum> method of L<LINQ::Array>.
 
 =head1 AUTHOR
 

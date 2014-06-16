@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<min> method.
+Test the C<min> method of L<LINQ::Array>.
 
 =head1 AUTHOR
 

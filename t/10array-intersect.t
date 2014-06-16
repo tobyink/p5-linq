@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<intersect> method.
+Test the C<intersect> method of L<LINQ::Array>.
 
 =head1 AUTHOR
 

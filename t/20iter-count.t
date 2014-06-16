@@ -4,10 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<count> method.
-
-This test is based on 10array-count.t but runs tests against
-L<LINQ::Iterator> rather than L<LINQ::Array>.
+Test the C<count> method of L<LINQ::Iterator>.
 
 =head1 AUTHOR
 

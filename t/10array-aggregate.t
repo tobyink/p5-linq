@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<aggregate> method.
+Test the C<aggregate> method of L<LINQ::Array>.
 
 =head1 AUTHOR
 

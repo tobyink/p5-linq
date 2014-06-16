@@ -4,10 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<cast> method.
-
-This test is based on 10array-cast.t but runs tests against
-L<LINQ::Iterator> rather than L<LINQ::Array>.
+Test the C<cast> method of L<LINQ::Iterator>.
 
 =head1 DEPENDENCIES
 

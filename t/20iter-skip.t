@@ -4,10 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<skip> method.
-
-This test is based on 10array-skip.t but runs tests against
-L<LINQ::Iterator> rather than L<LINQ::Array>.
+Test the C<skip> method of L<LINQ::Iterator>.
 
 =head1 AUTHOR
 

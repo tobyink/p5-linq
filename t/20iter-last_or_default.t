@@ -4,10 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<last_or_default> method.
-
-This test is based on 10array-last_or_default.t but runs tests against
-L<LINQ::Iterator> rather than L<LINQ::Array>.
+Test the C<last_or_default> method of L<LINQ::Iterator>.
 
 =head1 AUTHOR
 

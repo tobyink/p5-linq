@@ -4,7 +4,7 @@
 
 =head1 PURPOSE
 
-Test LINQ C<of_type> method.
+Test the C<of_type> method of L<LINQ::Array>.
 
 =head1 DEPENDENCIES
 
