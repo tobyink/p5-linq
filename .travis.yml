@@ -9,13 +9,13 @@ perl:
   - "5.10"
   - "5.8.9_thr"
   - "5.8.9"
-  - "5.8.3"
   - "5.8.1"
 matrix:
   include:
     - perl: 5.18.2
       env: COVERAGE=1         # enables coverage+coveralls reporting
 before_install:
+  - export DIST_INKT_PROFILE="Dist::Inkt::Profile::TOBYINK"
   - git clone git://github.com/tobyink/perl-travis-helper
   - source perl-travis-helper/init
   - build-perl
@@ -23,7 +23,7 @@ before_install:
   - build-dist
   - cd $BUILD_DIR             # $BUILD_DIR is set by the build-dist command
 install:
-  - cpan-install --solid      # installs a vaguely recent EUMM, Exporter
+  - cpan-install --toolchain  # installs a vaguely recent EUMM, Exporter
   - cpan-install --deps       # installs prereqs, including recommends
   - cpan-install --coverage   # installs converage prereqs, if enabled
 before_script:
@@ -32,3 +32,4 @@ script:
   - prove -l -j$((SYSTEM_CORES + 1)) $(test-dirs)   # parallel testing
 after_success:
   - coverage-report
+
