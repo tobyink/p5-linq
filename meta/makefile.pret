@@ -11,6 +11,6 @@
 	:runtime-requirement    [ :on "Role::Tiny 1.003003"^^:CpanId ];
 	:test-requirement       [ :on "Test::Modern 0.007"^^:CpanId ];
 	:test-recommendation    [ :on "Types::Standard"^^:CpanId ];
-	:develop-recommendation [ :on "Dist::Inkt::Profile::TOBYINK"^^:CpanId ];
+	:develop-suggestion     [ :on "Dist::Inkt::Profile::TOBYINK"^^:CpanId ];
 	.
 
