@@ -477,7 +477,22 @@ sub single_or_default {
 sub element_at {
 	my $self = shift;
 	my ($i) = @_;
-	($self->to_list)[$i];
+	
+	my @list = $self->to_list;
+	
+	if ($i > $#list) {
+		$_throw->('NotFound', collection => $self);
+	}
+	
+	if ($i < 0 - @list) {
+		$_throw->('NotFound', collection => $self);
+	}
+	
+	$list[$i];
+}
+
+sub element_at_or_default {
+	shift->$_with_default(element_at => @_);
 }
 
 sub any {
