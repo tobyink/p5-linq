@@ -23,5 +23,3 @@ Test suite:
 - Contains
 - ToArray
 - ToList
-- ToDictionary
-- ToLookup
