@@ -398,7 +398,7 @@ sub sequence_equal {
 	return !!0 unless @list1 == @list2;
 	
 	if (@compare) {
-		my $compare = $_assert_code->(@_);
+		my $compare = $_assert_code->(@compare);
 		for my $i (0 .. $#list1) {
 			return !!0 unless $compare->($list1[$i], $list2[$i]);
 		}
