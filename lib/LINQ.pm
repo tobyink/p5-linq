@@ -7,7 +7,7 @@ package LINQ;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.001';
 
-use Exporter::Shiny qw( LINQ );
+use Exporter::Shiny qw( LINQ Range Repeat );
 
 our $FORCE_ITERATOR;
 
@@ -40,6 +40,28 @@ sub LINQ ($) {
 	'LINQ::Exception::CallerError'->throw(
 		message => "Cannot create LINQ object from '$data'",
 	);
+}
+
+sub Range {
+	my ($min, $max) = @_;
+	
+	my $value = defined($min) ? $min : 0;
+	
+	if ( not defined $max ) {
+		return LINQ sub { $value++ };
+	}
+	
+	return LINQ sub { return if $value > $max; $value++ };
+}
+
+sub Repeat {
+	my ($value, $count) = @_;
+	
+	if ( not defined $count ) {
+		return LINQ sub { $value };
+	}
+	
+	return LINQ sub { return if $count-- <= 0; $value };
 }
 
 1;
