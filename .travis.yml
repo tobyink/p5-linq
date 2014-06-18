@@ -20,6 +20,7 @@ matrix:
         - perl -I$CPANCONFIG -MCPAN -e'install q(PEVANS/Scalar-List-Utils-1.35.tar.gz)'
         - perl -I$CPANCONFIG -MCPAN -e'install q(MSCHWERN/ExtUtils-MakeMaker-6.56.tar.gz)'
         - perl -I$CPANCONFIG -MCPAN -e'install q(FERREIRA/Exporter-5.63.tar.gz)'
+        - perl -I$CPANCONFIG -MCPAN -e'install q(CPAN::Meta::Requirements)'
         - perl -I$CPANCONFIG -MCPAN -e'install q(Test::Modern)'
         - perl -I$CPANCONFIG -MCPAN -e'install q(Test::Harness)'
         - perl -I$CPANCONFIG -MCPAN -e'install q(Class::Tiny)'
