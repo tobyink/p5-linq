@@ -17,18 +17,18 @@ matrix:
     - perl: "5.6.2"
       install:
         - export CPANCONFIG="$TRAVIS_BUILD_DIR/devel.travis"
-        - perl -I$CPANCONFIG -MCPAN -e'install q(PEVANS/Scalar-List-Utils-1.35.tar.gz)'
-        - perl -I$CPANCONFIG -MCPAN -e'install q(MSCHWERN/ExtUtils-MakeMaker-6.56.tar.gz)'
-        - perl -I$CPANCONFIG -MCPAN -e'install q(FERREIRA/Exporter-5.63.tar.gz)'
-        - perl -I$CPANCONFIG -MCPAN -e'install q(TOBYINK/Alt-Module-Runtime-ButEUMM-0.001.tar.gz)'
-        - perl -I$CPANCONFIG -MCPAN -e'install q(TOBYINK/Alt-Test-Warnings-ButEUMM-0.001.tar.gz)'
-        - perl -I$CPANCONFIG -MCPAN -e'install q(Test::Modern)'
-        - perl -I$CPANCONFIG -MCPAN -e'install q(Test::Harness)'
-        - perl -I$CPANCONFIG -MCPAN -e'install q(Class::Tiny)'
-        - perl -I$CPANCONFIG -MCPAN -e'install q(Exporter::Shiny)'
-        - perl -I$CPANCONFIG -MCPAN -e'install q(parent)'
-        - perl -I$CPANCONFIG -MCPAN -e'install q(Role::Tiny)'
-        - perl -I$CPANCONFIG -MCPAN -e'install q(Types::Standard)'
+        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(PEVANS/Scalar-List-Utils-1.35.tar.gz)'
+        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(MSCHWERN/ExtUtils-MakeMaker-6.56.tar.gz)'
+        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(FERREIRA/Exporter-5.63.tar.gz)'
+        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(TOBYINK/Alt-Module-Runtime-ButEUMM-0.001.tar.gz)'
+        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(TOBYINK/Alt-Test-Warnings-ButEUMM-0.001.tar.gz)'
+        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(Test::Modern)'
+        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(Test::Harness)'
+        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(Class::Tiny)'
+        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(Exporter::Shiny)'
+        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(parent)'
+        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(Role::Tiny)'
+        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(Types::Standard)'
       script:
         - perl /home/travis/perl5/perlbrew/perls/5.6.2/bin/prove -r -Ilib -Iinc t
 before_install:
@@ -40,8 +40,8 @@ before_install:
   - build-dist
   - cd $BUILD_DIR             # $BUILD_DIR is set by the build-dist command
 install:
-  - cpan-install "TOBYINK/Alt-Module-Runtime-ButEUMM-0.001.tar.gz"
-  - cpan-install "TOBYINK/Alt-Test-Warnings-ButEUMM-0.001.tar.gz"
+  - AUTHOR_TESTING=0 cpan-install "TOBYINK/Alt-Module-Runtime-ButEUMM-0.001.tar.gz"
+  - AUTHOR_TESTING=0 cpan-install "TOBYINK/Alt-Test-Warnings-ButEUMM-0.001.tar.gz"
   - cpan-install --deps       # installs prereqs, including recommends
   - cpan-install --coverage   # installs converage prereqs, if enabled
 before_script:
