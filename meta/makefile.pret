@@ -9,7 +9,7 @@
 	:runtime-requirement    [ :on "Scalar::Util"^^:CpanId ];
 	:runtime-requirement    [ :on "parent 0.224"^^:CpanId ];
 	:runtime-requirement    [ :on "Role::Tiny 1.003003"^^:CpanId ];
-	:test-requirement       [ :on "Test::Modern 0.007"^^:CpanId ];
+	:test-requirement       [ :on "Test::Modern 0.008"^^:CpanId ];
 	:test-recommendation    [ :on "Types::Standard"^^:CpanId ];
 	:develop-suggestion     [ :on "Dist::Inkt::Profile::TOBYINK"^^:CpanId ];
 	.
