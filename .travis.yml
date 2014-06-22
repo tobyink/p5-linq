@@ -11,6 +11,10 @@ perl:
   - "5.8.9"
   - "5.8.1"
 matrix:
+  fast_finish: true
+  allow_failures:
+    - perl: 5.8.1
+    - perl: 5.6.2
   include:
     - perl: 5.18.2
       env:  EXTENDED_TESTING=1 COVERAGE=1
