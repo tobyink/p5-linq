@@ -29,9 +29,12 @@ before_install:
   - build-dist
   - cd $BUILD_DIR
 install:
-  - AUTHOR_TESTING=0 cpan-install "TOBYINK/Alt-Module-Runtime-ButEUMM-0.001.tar.gz"
-  - AUTHOR_TESTING=0 cpan-install "TOBYINK/Alt-Class-Tiny-ButPerl56-0.001.tar.gz"
-  - cpan-install --toolchain
+  - AUTHOR_TESTING=0 cpan-install --toolchain
+  - AUTHOR_TESTING=0 cpan-install 'Scalar::Util~1.13'
+  - AUTHOR_TESTING=0 cpan-install 'Test::More~0.47'
+  - AUTHOR_TESTING=0 cpan-install 'Test::Harness~3.00'
+  - AUTHOR_TESTING=0 cpan-install 'TOBYINK/Alt-Module-Runtime-ButEUMM-0.001.tar.gz'
+  - AUTHOR_TESTING=0 cpan-install 'TOBYINK/Alt-Class-Tiny-ButPerl56-0.001.tar.gz'
   - cpan-install --deps
   - cpan-install --coverage
 before_script:
