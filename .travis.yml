@@ -1,52 +1,38 @@
 language: perl
 perl:
-#  - "blead"
-#  - "5.20.0"
-#  - "5.18.2_thr"
+  - "blead"
+  - "5.20.0"
+  - "5.18.2_thr"
   - "5.16"
-#  - "5.14"
-#  - "5.12"
-#  - "5.10"
-#  - "5.8.9_thr"
-#  - "5.8.9"
-#  - "5.8.1"
+  - "5.14"
+  - "5.12"
+  - "5.10"
+  - "5.8.9_thr"
+  - "5.8.9"
+  - "5.8.1"
 matrix:
   include:
     - perl: 5.18.2
       env:  EXTENDED_TESTING=1 COVERAGE=1
     - perl: "5.6.2"
-      install:
-        - export CPANCONFIG="$TRAVIS_BUILD_DIR/devel.travis"
-        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(PEVANS/Scalar-List-Utils-1.35.tar.gz)'
-        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(MSCHWERN/ExtUtils-MakeMaker-6.56.tar.gz)'
-        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(FERREIRA/Exporter-5.63.tar.gz)'
-        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(TOBYINK/Alt-Module-Runtime-ButEUMM-0.001.tar.gz)'
-        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(TOBYINK/Alt-Test-Warnings-ButEUMM-0.001.tar.gz)'
-        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(Test::Modern)'
-        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(Test::Harness)'
-        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(Class::Tiny)'
-        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(Exporter::Shiny)'
-        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(parent)'
-        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(Role::Tiny)'
-        - AUTHOR_TESTING=0 perl -I$CPANCONFIG -MCPAN -e'install q(Types::Standard)'
-      script:
-        - perl /home/travis/perl5/perlbrew/perls/5.6.2/bin/prove -r -Ilib -Iinc t
+      script: perl /home/travis/perl5/perlbrew/perls/5.6.2/bin/prove -r -Ilib -Iinc "t"
 before_install:
   - export DIST_INKT_PROFILE="Dist::Inkt::Profile::TOBYINK"
-  - git clone git://github.com/tobyink/perl-travis-helper
+  - git clone git://github.com/haarg/perl-travis-helper
   - source perl-travis-helper/init
   - build-perl
   - perl -V
   - build-dist
-  - cd $BUILD_DIR             # $BUILD_DIR is set by the build-dist command
+  - cd $BUILD_DIR
 install:
   - AUTHOR_TESTING=0 cpan-install "TOBYINK/Alt-Module-Runtime-ButEUMM-0.001.tar.gz"
-  - AUTHOR_TESTING=0 cpan-install "TOBYINK/Alt-Test-Warnings-ButEUMM-0.001.tar.gz"
-  - cpan-install --deps       # installs prereqs, including recommends
-  - cpan-install --coverage   # installs converage prereqs, if enabled
+  - AUTHOR_TESTING=0 cpan-install "TOBYINK/Alt-Class-Tiny-ButPerl56-0.001.tar.gz"
+  - cpan-install --toolchain
+  - cpan-install --deps
+  - cpan-install --coverage
 before_script:
   - coverage-setup
 script:
-  - prove -l -r $(test-dirs)
+  - prove -l -r "t"
 after_success:
   - coverage-report
