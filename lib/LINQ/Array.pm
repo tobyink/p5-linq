@@ -8,6 +8,7 @@ if ($] < 5.010000) {
 
 package LINQ::Array;
 
+use Class::Tiny qw( array );
 use Role::Tiny::With ();
 
 Role::Tiny::With::with(qw( LINQ::Collection ));
@@ -26,12 +27,6 @@ sub count {
 sub to_list {
 	my $self = shift;
 	@$self;
-}
-
-sub element_at {
-	my $self = shift;
-	my ($n) = @_;
-	$self->[$n];
 }
 
 sub target_class {

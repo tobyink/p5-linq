@@ -32,7 +32,7 @@ is_deeply(
 
 my $c2 = do {
 	my @remaining = reverse( 1..10 );
-	LINQ sub { return unless @remaining; pop @remaining };
+	LINQ sub { return LINQ::END unless @remaining; pop @remaining };
 };
 
 is_deeply(

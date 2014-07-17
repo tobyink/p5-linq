@@ -7,9 +7,21 @@ package LINQ;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.001';
 
-use Exporter::Shiny qw( LINQ Range Repeat );
+use Exporter::Shiny qw( LINQ Range Repeat END );
 
 our $FORCE_ITERATOR;
+
+my $end = do {
+	package LINQ::END;
+	my $x = 42;
+	bless(\$x);
+	&Internals::SvREADONLY(\$x, !!1);
+	\$x;
+};
+
+BEGIN {
+	*LINQ::END  = sub () { $end };
+}
 
 sub LINQ ($) {
 	my $data = shift;
@@ -19,7 +31,9 @@ sub LINQ ($) {
 		if ($FORCE_ITERATOR) {
 			my @data = @$data;
 			require LINQ::Iterator;
-			return LINQ::Iterator::->new(sub { @data ? shift(@data) : () });
+			return LINQ::Iterator::->new(
+				sub { @data ? shift(@data) : LINQ::END }
+			);
 		}
 		
 		require LINQ::Array;
@@ -51,7 +65,7 @@ sub Range {
 		return LINQ sub { $value++ };
 	}
 	
-	return LINQ sub { return if $value > $max; $value++ };
+	return LINQ sub { return LINQ::END if $value > $max; $value++ };
 }
 
 sub Repeat {
@@ -61,7 +75,7 @@ sub Repeat {
 		return LINQ sub { $value };
 	}
 	
-	return LINQ sub { return if $count-- <= 0; $value };
+	return LINQ sub { return LINQ::END if $count-- <= 0; $value };
 }
 
 1;

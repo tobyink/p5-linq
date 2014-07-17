@@ -19,8 +19,6 @@ the same terms as the Perl 5 programming language system itself.
 
 =cut
 
-BEGIN { $LINQ::FORCE_ITERATOR = 1 }
-
 use Test::Modern;
 use LINQ qw( LINQ );
 use DisneyData qw( people );
