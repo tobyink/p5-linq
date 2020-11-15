@@ -19,12 +19,21 @@ the same terms as the Perl 5 programming language system itself.
 
 =cut
 
-use Test::Modern qw( use_ok done_testing );
+use Test::Modern qw( use_ok done_testing -pod -versions );
 
 use_ok('LINQ');
 use_ok('LINQ::Array');
+use_ok('LINQ::Iterator');
 use_ok('LINQ::Collection');
 use_ok('LINQ::Exception');
+
+all_pod_files_ok('lib', 't');
+
+{
+	local $TODO = 'must fix before release';
+	all_pod_coverage_ok('lib');
+	version_all_same('lib');
+}
 
 done_testing;
 
