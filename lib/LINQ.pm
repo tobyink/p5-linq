@@ -112,7 +112,8 @@ LINQ is basically an application of SQL concepts to arrays and iterators.
 Hopefully this implementation will eventually cover other data types like
 SQL tables, XML and JSON data, etc.
 
-Not much is documented yet.
+Not much is documented yet, but the test suite includes numerous examples
+of LINQ's usage.
 
 =head1 HISTORY
 
