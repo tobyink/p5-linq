@@ -94,7 +94,34 @@ LINQ - an interpretation of Microsoft's Language Integrated Query
 
 =head1 SYNOPSIS
 
+  use feature 'say';
+  use LINQ 'LINQ';
+  
+  my $double_even_numbers =
+    LINQ( [1..100] )
+      ->where( sub { $_ % 2 == 0 } )
+      ->select( sub { $_ * 2 } );
+  
+  for my $n ( $double_even_numbers->to_list ) {
+    say $n;
+  }
+
 =head1 DESCRIPTION
+
+LINQ is basically an application of SQL concepts to arrays and iterators.
+Hopefully this implementation will eventually cover other data types like
+SQL tables, XML and JSON data, etc.
+
+Not much is documented yet.
+
+=head1 HISTORY
+
+I wrote this back in 2014, but never released it. After a discussion
+about how nice it would be to have a programming language which used SQL
+concepts natively, eliminating the need to "map" between how your
+application handled data and how your database handled data, I remembered
+this. So I thought I'd push what I had so far onto CPAN and maybe think
+about reviving it.
 
 =head1 BUGS
 
@@ -103,17 +130,18 @@ L<http://rt.cpan.org/Dist/Display.html?Queue=LINQ>.
 
 =head1 SEE ALSO
 
+L<https://en.wikipedia.org/wiki/Language_Integrated_Query>
+
 =head1 AUTHOR
 
 Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
 
 =head1 COPYRIGHT AND LICENCE
 
-This software is copyright (c) 2014 by Toby Inkster.
+This software is copyright (c) 2014, 2021 by Toby Inkster.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
-
 
 =head1 DISCLAIMER OF WARRANTIES
 
