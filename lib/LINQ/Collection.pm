@@ -610,4 +610,15 @@ sub zip {
 	$self->$_create_linq(\@results);
 }
 
+sub default_if_empty {
+	my $self = shift;
+	my $item = shift;
+	
+	if ( $self->count == 0 ) {
+		return $self->$_create_linq( [$item] );
+	}
+	
+	return $self;
+}
+
 1;

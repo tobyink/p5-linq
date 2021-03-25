@@ -1,6 +1,3 @@
-Methods:
-- DefaultIfEmpty
-
 Classes:
 - LINQ::DBI
 - LINQ::LibXML
