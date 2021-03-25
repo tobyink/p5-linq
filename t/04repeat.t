@@ -22,7 +22,7 @@ the same terms as the Perl 5 programming language system itself.
 use Test::Modern;
 use LINQ qw(Repeat);
 
-my $c1 = Repeat("Foo", 7); 
+my $c1 = Repeat("Foo", 7);
 
 is_deeply(
 	$c1->to_array,

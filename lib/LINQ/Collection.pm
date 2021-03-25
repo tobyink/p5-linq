@@ -127,7 +127,7 @@ sub sum {
 
 sub average {
 	my $self = shift;
-	$self->sum(@_) / $self->count();	
+	$self->sum(@_) / $self->count();
 }
 
 sub aggregate {
@@ -281,7 +281,7 @@ sub concat {
 
 sub order_by {
 	my $self   = shift;
-	my $hint   = ref($_[0]) ? -numeric : shift(@_); 
+	my $hint   = ref($_[0]) ? -numeric : shift(@_);
 	my $keygen = $_assert_code->(@_);
 	
 	if ($hint eq -string)

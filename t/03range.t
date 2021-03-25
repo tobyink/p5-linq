@@ -22,7 +22,7 @@ the same terms as the Perl 5 programming language system itself.
 use Test::Modern;
 use LINQ qw(Range);
 
-my $c1 = Range(1, 7); 
+my $c1 = Range(1, 7);
 
 is_deeply(
 	$c1->to_array,
@@ -30,7 +30,7 @@ is_deeply(
 	'Range(1, 7)',
 );
 
-my $c2 = Range(-1, 7); 
+my $c2 = Range(-1, 7);
 
 is_deeply(
 	$c2->to_array,
