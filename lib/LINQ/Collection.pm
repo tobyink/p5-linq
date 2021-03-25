@@ -4,6 +4,9 @@ use warnings;
 
 package LINQ::Collection;
 
+our $AUTHORITY = 'cpan:TOBYINK';
+our $VERSION   = '0.000_001';
+
 use Role::Tiny;
 
 requires qw( target_class to_list );
