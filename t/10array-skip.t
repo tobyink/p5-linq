@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -32,25 +33,25 @@ my $collection = LINQ [
 ];
 
 is_deeply(
-	$collection->skip(3)->to_array,
+	$collection->skip( 3 )->to_array,
 	[qw/ Cat Dog Elephant /],
 	'skip(3)',
 );
 
 is_deeply(
-	$collection->skip(0)->to_array,
+	$collection->skip( 0 )->to_array,
 	$collection->to_array,
 	'skip(0)',
 );
 
 is_deeply(
-	$collection->skip(-1)->to_array,
+	$collection->skip( -1 )->to_array,
 	$collection->to_array,
 	'skip(-1)',
 );
 
 is_deeply(
-	$collection->skip(1000)->to_array,
+	$collection->skip( 1000 )->to_array,
 	[],
 	'skip(1000)',
 );

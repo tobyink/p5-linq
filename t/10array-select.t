@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -32,7 +33,7 @@ my $collection = LINQ [
 ];
 
 is_deeply(
-	$collection->select(sub { substr($_, 0, 2) })->to_array,
+	$collection->select( sub { substr( $_, 0, 2 ) } )->to_array,
 	[qw/ Aa Aa Be Ca Do El /],
 	'simple select',
 );

@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -24,18 +25,18 @@ BEGIN { $LINQ::FORCE_ITERATOR = 1 }
 use Test::Modern;
 use LINQ qw( LINQ );
 
-my $letters = LINQ[ 'A' .. 'Z' ];
-my $numbers = LINQ[  0  ..  9  ];
-my $sprintf = sub { my $fmt = shift; sprintf($fmt, @_) };
+my $letters = LINQ [ 'A' .. 'Z' ];
+my $numbers = LINQ [ 0 .. 9 ];
+my $sprintf = sub { my $fmt = shift; sprintf( $fmt, @_ ) };
 
 is_deeply(
-	$letters->zip($numbers, $sprintf, '%s:%s')->to_array,
+	$letters->zip( $numbers, $sprintf, '%s:%s' )->to_array,
 	[qw/ A:0 B:1 C:2 D:3 E:4 F:5 G:6 H:7 I:8 J:9 /],
 	'simple zip with a curried argument',
 );
 
 is_deeply(
-	$numbers->zip($letters, $sprintf, '%s+%s')->to_array,
+	$numbers->zip( $letters, $sprintf, '%s+%s' )->to_array,
 	[qw/ 0+A 1+B 2+C 3+D 4+E 5+F 6+G 7+H 8+I 9+J /],
 	'another simple zip, reversing the collections',
 );

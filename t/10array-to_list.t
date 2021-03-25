@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -22,7 +23,7 @@ the same terms as the Perl 5 programming language system itself.
 use Test::Modern;
 use LINQ qw( LINQ );
 
-is_deeply( [ LINQ($_)->to_list ], $_ )
-	for [ 1..7 ], [], [ 'a' .. 'z' ], [{ foo => 42 }];
-
+is_deeply( [ LINQ( $_ )->to_list ], $_ )
+	for [ 1 .. 7 ], [], [ 'a' .. 'z' ], [ { foo => 42 } ];
+	
 done_testing;

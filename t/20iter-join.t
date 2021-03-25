@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -26,7 +27,7 @@ use LINQ qw( LINQ );
 use DisneyData qw( people pets );
 
 my $smush = sub {
-	my ($person, $pet) = @_;
+	my ( $person, $pet ) = @_;
 	return [
 		$person ? $person->id   : -1,
 		$pet    ? $pet->id      : -1,
@@ -34,13 +35,13 @@ my $smush = sub {
 	];
 };
 
-my $order = sub { join(":",grep defined,@$_) };
+my $order = sub { join( ":", grep defined, @$_ ) };
 
 {
-	my $inner = people->join(pets, sub { $_ }, sub { $_->owner }, $smush);
+	my $inner = people->join( pets, sub { $_ }, sub { $_->owner }, $smush );
 	
 	is_deeply(
-		$inner->order_by(-string, $order)->to_array,
+		$inner->order_by( -string, $order )->to_array,
 		[
 			[qw/ 3 1 Reindeer /],
 			[qw/ 4 3 Rabbit /],
@@ -53,13 +54,13 @@ my $order = sub { join(":",grep defined,@$_) };
 }
 
 {
-	my $left = people->join(pets, -left, sub { $_ }, sub { $_->owner }, $smush);
+	my $left = people->join( pets, -left, sub { $_ }, sub { $_->owner }, $smush );
 	
 	is_deeply(
-		$left->order_by(-string, $order)->to_array,
+		$left->order_by( -string, $order )->to_array,
 		[
-			[1, -1, undef],  # Olaf doesn't count
-			[2, -1, undef],  # Marshmallow doesn't count
+			[ 1, -1, undef ],    # Olaf doesn't count
+			[ 2, -1, undef ],    # Marshmallow doesn't count
 			[qw/ 3 1 Reindeer /],
 			[qw/ 4 3 Rabbit /],
 			[qw/ 4 4 Robin /],
@@ -71,10 +72,10 @@ my $order = sub { join(":",grep defined,@$_) };
 }
 
 {
-	my $right = people->join(pets, -right, sub { $_ }, sub { $_->owner }, $smush);
+	my $right = people->join( pets, -right, sub { $_ }, sub { $_->owner }, $smush );
 	
 	is_deeply(
-		$right->order_by(-string, $order)->to_array,
+		$right->order_by( -string, $order )->to_array,
 		[
 			[qw/ -1 6 Dog /],
 			[qw/ 3 1 Reindeer /],
@@ -88,14 +89,14 @@ my $order = sub { join(":",grep defined,@$_) };
 }
 
 {
-	my $outer = people->join(pets, -outer, sub { $_ }, sub { $_->owner }, $smush);
+	my $outer = people->join( pets, -outer, sub { $_ }, sub { $_->owner }, $smush );
 	
 	is_deeply(
-		$outer->order_by(-string, $order)->to_array,
+		$outer->order_by( -string, $order )->to_array,
 		[
 			[qw/ -1 6 Dog /],
-			[1, -1, undef],
-			[2, -1, undef],
+			[ 1, -1, undef ],
+			[ 2, -1, undef ],
 			[qw/ 3 1 Reindeer /],
 			[qw/ 4 3 Rabbit /],
 			[qw/ 4 4 Robin /],

@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -32,21 +33,25 @@ my $collection = LINQ [
 ];
 
 is_deeply(
-	$collection->select_many(sub {
-		length >= 4
-			? [substr($_, 0, 2), substr($_, 2, 2)]
-			: [];
-	})->to_array,
+	$collection->select_many(
+		sub {
+			length >= 4
+				? [ substr( $_, 0, 2 ), substr( $_, 2, 2 ) ]
+				: [];
+		}
+	)->to_array,
 	[qw/ Aa rd Aa rd El ep /],
 	'select_many returning an arrayref',
 );
 
 is_deeply(
-	$collection->select_many(sub {
-		length >= 4
-			? LINQ[substr($_, 0, 2), substr($_, 2, 2)]
-			: LINQ[];
-	})->to_array,
+	$collection->select_many(
+		sub {
+			length >= 4
+				? LINQ [ substr( $_, 0, 2 ), substr( $_, 2, 2 ) ]
+				: LINQ [];
+		}
+	)->to_array,
 	[qw/ Aa rd Aa rd El ep /],
 	'select_many returning a LINQ::Collection',
 );

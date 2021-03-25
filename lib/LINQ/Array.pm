@@ -2,7 +2,7 @@ use 5.006;
 use strict;
 use warnings;
 
-if ($] < 5.010000) {
+if ( $] < 5.010000 ) {
 	require UNIVERSAL::DOES;
 }
 
@@ -14,16 +14,16 @@ our $VERSION   = '0.000_002';
 use Class::Tiny qw( array );
 use Role::Tiny::With ();
 
-Role::Tiny::With::with(qw( LINQ::Collection ));
+Role::Tiny::With::with( qw( LINQ::Collection ) );
 
 sub new {
 	my $class = shift;
-	bless [@{$_[0]}], $class;
+	bless [ @{ $_[0] } ], $class;
 }
 
 sub count {
 	my $self = shift;
-	return $self->where(@_)->count if @_;
+	return $self->where( @_ )->count if @_;
 	scalar @$self;
 }
 

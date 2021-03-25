@@ -12,43 +12,42 @@ use Exporter::Shiny qw( LINQ Range Repeat END );
 our $FORCE_ITERATOR;
 
 my $end = do {
+
 	package LINQ::END;
 	our $AUTHORITY = 'cpan:TOBYINK';
 	our $VERSION   = '0.000_002';
 	my $x = 42;
-	bless(\$x);
-	&Internals::SvREADONLY(\$x, !!1);
+	bless( \$x );
+	&Internals::SvREADONLY( \$x, !!1 );
 	\$x;
 };
 
 BEGIN {
-	*LINQ::END  = sub () { $end };
+	*LINQ::END = sub () { $end };
 }
 
 sub LINQ ($) {
 	my $data = shift;
-	my $ref  = ref($data);
+	my $ref  = ref( $data );
 	
-	if ($ref eq 'ARRAY') {
-		if ($FORCE_ITERATOR) {
+	if ( $ref eq 'ARRAY' ) {
+		if ( $FORCE_ITERATOR ) {
 			my @data = @$data;
 			require LINQ::Iterator;
-			return LINQ::Iterator::->new(
-				sub { @data ? shift(@data) : LINQ::END }
-			);
+			return LINQ::Iterator::->new( sub { @data ? shift( @data ) : LINQ::END } );
 		}
 		
 		require LINQ::Array;
-		return LINQ::Array::->new($data);
-	}
+		return LINQ::Array::->new( $data );
+	} #/ if ( $ref eq 'ARRAY' )
 	
-	if ($ref eq 'CODE') {
+	if ( $ref eq 'CODE' ) {
 		require LINQ::Iterator;
-		return LINQ::Iterator::->new($data);
+		return LINQ::Iterator::->new( $data );
 	}
 	
 	require Scalar::Util;
-	if (Scalar::Util::blessed($data) and $data->DOES('LINQ::Collection')) {
+	if ( Scalar::Util::blessed( $data ) and $data->DOES( 'LINQ::Collection' ) ) {
 		return $data;
 	}
 	
@@ -56,22 +55,22 @@ sub LINQ ($) {
 	'LINQ::Exception::CallerError'->throw(
 		message => "Cannot create LINQ object from '$data'",
 	);
-}
+} #/ sub LINQ ($)
 
 sub Range {
-	my ($min, $max) = @_;
+	my ( $min, $max ) = @_;
 	
-	my $value = defined($min) ? $min : 0;
+	my $value = defined( $min ) ? $min : 0;
 	
 	if ( not defined $max ) {
 		return LINQ sub { $value++ };
 	}
 	
 	return LINQ sub { return LINQ::END if $value > $max; $value++ };
-}
+} #/ sub Range
 
 sub Repeat {
-	my ($value, $count) = @_;
+	my ( $value, $count ) = @_;
 	
 	if ( not defined $count ) {
 		return LINQ sub { $value };
@@ -149,4 +148,3 @@ the same terms as the Perl 5 programming language system itself.
 THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
 WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
 MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-

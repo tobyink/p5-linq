@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -24,14 +25,14 @@ BEGIN { $LINQ::FORCE_ITERATOR = 1 }
 use Test::Modern;
 use LINQ qw( LINQ );
 
-my $c = LINQ [ map +{ i => $_ }, 1..10 ];
+my $c = LINQ [ map +{ i => $_ }, 1 .. 10 ];
 
 object_ok(
-	$c->group_by(sub { $_->{i} % 3 }),
+	$c->group_by( sub { $_->{i} % 3 } ),
 	'$groups',
 	does => ['LINQ::Collection'],
 	more => sub {
-		my ($g0, $g1, $g2) = @{ shift->order_by(sub { $_->key })->to_array };
+		my ( $g0, $g1, $g2 ) = @{ shift->order_by( sub { $_->key } )->to_array };
 		
 		object_ok(
 			$g0,
@@ -89,6 +90,5 @@ object_ok(
 		);
 	},
 );
-
 
 done_testing;

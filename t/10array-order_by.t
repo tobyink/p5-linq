@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -31,7 +32,7 @@ my $c = LINQ [
 ];
 
 is_deeply(
-	$c->order_by(sub { $_->{foo} })->to_array,
+	$c->order_by( sub { $_->{foo} } )->to_array,
 	[
 		{ foo => 7 },
 		{ foo => 8 },
@@ -42,7 +43,7 @@ is_deeply(
 );
 
 is_deeply(
-	$c->order_by(-string, sub { $_->{foo} })->to_array,
+	$c->order_by( -string, sub { $_->{foo} } )->to_array,
 	[
 		{ foo => 1234 },
 		{ foo => 56 },
@@ -53,7 +54,8 @@ is_deeply(
 );
 
 is_deeply(
-	$c->order_by(sub { my $f = $_->{foo}; length($f)>1?length($f):$f })->to_array,
+	$c->order_by( sub { my $f = $_->{foo}; length( $f ) > 1 ? length( $f ) : $f } )
+		->to_array,
 	[
 		{ foo => 56 },
 		{ foo => 1234 },

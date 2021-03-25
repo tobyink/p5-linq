@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -26,7 +27,7 @@ BEGIN { $LINQ::FORCE_ITERATOR = 1 }
 use Test::Modern;
 use LINQ qw( LINQ );
 
-is_deeply( LINQ($_)->to_array, $_ )
-	for [ 1..7 ], [], [ 'a' .. 'z' ], [{ foo => 42 }];
-
+is_deeply( LINQ( $_ )->to_array, $_ )
+	for [ 1 .. 7 ], [], [ 'a' .. 'z' ], [ { foo => 42 } ];
+	
 done_testing;

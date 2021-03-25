@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -24,17 +25,17 @@ use LINQ qw( LINQ );
 use DisneyData qw( people pets );
 
 ok(
-	people->any(sub { $_->name eq 'Elsa' }),
+	people->any( sub { $_->name eq 'Elsa' } ),
 	'any returning true',
 );
 
 ok(
-	! people->any(sub { $_->name eq 'Aurora' }),
+	!people->any( sub { $_->name eq 'Aurora' } ),
 	'any returning false',
 );
 
 ok(
-	! LINQ([])->any(sub { die; }),
+	!LINQ( [] )->any( sub { die; } ),
 	'any returning false on empty collection without even needing to run check',
 );
 

@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -25,16 +26,16 @@ use Test::Modern;
 use LINQ qw( LINQ );
 
 is_deeply(
-	LINQ([1, 4, 3, 4, 2])->distinct->to_array,
+	LINQ( [ 1, 4, 3, 4, 2 ] )->distinct->to_array,
 	[ 1, 4, 3, 2 ],
 	'simple distinct',
 );
 
 is_deeply(
-	LINQ([ map(+{ i => $_ }, 1, 4, 3, 4, 2, 6, 2, 9) ])
-		-> distinct(sub { $_[0]{i} == $_[1]{i} })
-		-> select(sub { $_->{i} })
-		-> to_array,
+	LINQ( [ map( +{ i => $_ }, 1, 4, 3, 4, 2, 6, 2, 9 ) ] )
+		->distinct( sub { $_[0]{i} == $_[1]{i} } )
+		->select( sub { $_->{i} } )
+		->to_array,
 	[ 1, 4, 3, 2, 6, 9 ],
 	'simple distinct(CODE)',
 );

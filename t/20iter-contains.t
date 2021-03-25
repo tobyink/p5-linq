@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -26,26 +27,26 @@ use LINQ qw( LINQ );
 use DisneyData qw( people );
 
 ok(
-	LINQ([1..7])->contains(6),
+	LINQ( [ 1 .. 7 ] )->contains( 6 ),
 	'contains(6)',
 );
 
 ok(
-	! LINQ([1..7])->contains(8),
+	!LINQ( [ 1 .. 7 ] )->contains( 8 ),
 	'contains(8)',
 );
 
-my $elsa = Person::->new(name => "Elsa");
-my $hans = Person::->new(name => "Hans");
+my $elsa        = Person::->new( name => "Elsa" );
+my $hans        = Person::->new( name => "Hans" );
 my $same_person = sub { $_[0]->name eq $_[1]->name };
 
 ok(
-	people->contains($elsa, $same_person),
+	people->contains( $elsa, $same_person ),
 	'contains($elsa)',
 );
 
 ok(
-	! people->contains($hans, $same_person),
+	!people->contains( $hans, $same_person ),
 	'contains($hans)',
 );
 

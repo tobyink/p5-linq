@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -37,7 +38,7 @@ is(
 );
 
 is(
-	LINQ( [qw/Aardvark Bee Hawk/] )->count(sub { $_ =~ $_[0] }, qr/a/),
+	LINQ( [qw/Aardvark Bee Hawk/] )->count( sub { $_ =~ $_[0] }, qr/a/ ),
 	2,
 	'count(CODE)',
 );

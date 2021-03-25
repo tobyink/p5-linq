@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -26,28 +27,28 @@ use DisneyData qw( people );
 object_ok(
 	people->first_or_default(
 		sub { not $_->name =~ /a$/ },
-		Person::->new(name => "Hans", id => 666),
+		Person::->new( name => "Hans", id => 666 ),
 	),
 	'$kristoff',
 	isa  => [qw( Person )],
 	can  => [qw( name )],
-	more => sub { is(shift->name, 'Kristoff') },
+	more => sub { is( shift->name, 'Kristoff' ) },
 );
 
 object_ok(
 	people->first_or_default(
 		sub { not $_->id > 0 },
-		Person::->new(name => "Hans", id => 666),
+		Person::->new( name => "Hans", id => 666 ),
 	),
 	'$hans',
 	isa  => [qw( Person )],
 	can  => [qw( name )],
-	more => sub { is(shift->name, 'Hans') },
+	more => sub { is( shift->name, 'Hans' ) },
 );
 
 my $e = exception {
 	people->first_or_default( sub { die "HAHA" }, 1 );
 };
-like($e, qr/^HAHA/, 'unrelated exceptions not caught by default');
+like( $e, qr/^HAHA/, 'unrelated exceptions not caught by default' );
 
 done_testing;

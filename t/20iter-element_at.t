@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -27,7 +28,7 @@ use DisneyData qw( people );
 
 for my $idx ( -5, -4, -3, -2, -1, 0, 1, 2, 3, 4 ) {
 	is(
-		people->element_at($idx),
+		people->element_at( $idx ),
 		people->to_array->[$idx],
 		"element_at($idx)",
 	);
@@ -35,10 +36,10 @@ for my $idx ( -5, -4, -3, -2, -1, 0, 1, 2, 3, 4 ) {
 
 for my $idx ( -6, 5 ) {
 	object_ok(
-		exception { people->element_at($idx) },
+		exception { people->element_at( $idx ) },
 		'$e',
-		isa  => [qw( LINQ::Exception LINQ::Exception::NotFound )],
-		can  => [qw( message collection )],
+		isa => [qw( LINQ::Exception LINQ::Exception::NotFound )],
+		can => [qw( message collection )],
 	);
 }
 

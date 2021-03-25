@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -24,18 +25,20 @@ use LINQ qw( LINQ );
 use DisneyData qw( people );
 
 object_ok(
-	people->last(sub { not $_->name =~ /a$/ }),
+	people->last( sub { not $_->name =~ /a$/ } ),
 	'$rapunzel',
 	isa  => [qw( Person )],
 	can  => [qw( name )],
-	more => sub { is(shift->name, 'Rapunzel') },
+	more => sub { is( shift->name, 'Rapunzel' ) },
 );
 
 object_ok(
-	exception { people->last(sub { $_->id < 0 }) },
+	exception {
+		people->last( sub { $_->id < 0 } )
+	},
 	'$e',
-	isa  => [qw( LINQ::Exception LINQ::Exception::NotFound )],
-	can  => [qw( message collection )],
+	isa => [qw( LINQ::Exception LINQ::Exception::NotFound )],
+	can => [qw( message collection )],
 );
 
 done_testing;

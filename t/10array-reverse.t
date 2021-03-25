@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -32,7 +33,7 @@ my $c = LINQ [
 
 is_deeply(
 	$c->reverse->to_array,
-	[ reverse($c->to_list) ],
+	[ reverse( $c->to_list ) ],
 );
 
 done_testing;

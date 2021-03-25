@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -23,20 +24,20 @@ use Test::Modern;
 use LINQ qw( LINQ );
 
 is_deeply(
-	(LINQ [1..4])->concat(LINQ [5..8])->to_array,
-	[1 .. 8],
+	( LINQ [ 1 .. 4 ] )->concat( LINQ [ 5 .. 8 ] )->to_array,
+	[ 1 .. 8 ],
 	'simple concat',
 );
 
 is_deeply(
-	(LINQ [1..8])->concat(LINQ [])->to_array,
-	[1 .. 8],
+	( LINQ [ 1 .. 8 ] )->concat( LINQ [] )->to_array,
+	[ 1 .. 8 ],
 	'concat with empty tail',
 );
 
 is_deeply(
-	(LINQ [])->concat(LINQ [1..8])->to_array,
-	[1 .. 8],
+	( LINQ [] )->concat( LINQ [ 1 .. 8 ] )->to_array,
+	[ 1 .. 8 ],
 	'concat with empty head',
 );
 

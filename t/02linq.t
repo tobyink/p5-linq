@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -22,26 +23,25 @@ the same terms as the Perl 5 programming language system itself.
 use Test::Modern;
 use LINQ qw(LINQ);
 
-my $c1 = LINQ[ 1..7 ];
+my $c1 = LINQ [ 1 .. 7 ];
 
 is_deeply(
 	$c1->to_array,
-	[ 1..7 ],
+	[ 1 .. 7 ],
 	'LINQ(ARRAY)',
 );
 
 my $c2 = do {
-	my @remaining = reverse( 1..10 );
+	my @remaining = reverse( 1 .. 10 );
 	LINQ sub { return LINQ::END unless @remaining; pop @remaining };
 };
 
 is_deeply(
 	$c2->to_array,
-	[ 1..10 ],
+	[ 1 .. 10 ],
 	'LINQ(CODE)',
 );
 
-is( LINQ($c1), $c1, 'LINQ(Collection)' );
+is( LINQ( $c1 ), $c1, 'LINQ(Collection)' );
 
 done_testing;
-

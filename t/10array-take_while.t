@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -33,19 +34,19 @@ my $collection = LINQ [
 ];
 
 is_deeply(
-	$collection->take_while(sub { $_ ne "Cat" })->to_array,
+	$collection->take_while( sub { $_ ne "Cat" } )->to_array,
 	[qw/ Aardvark Aardwolf Bee /],
 	'take_while(CODE)',
 );
 
 is_deeply(
-	$collection->take_while(qr/^A/)->to_array,
+	$collection->take_while( qr/^A/ )->to_array,
 	[qw/ Aardvark Aardwolf /],
 	'take_while(Regexp)',
 );
 
 is_deeply(
-	$collection->take_while(qr/./)->to_array,
+	$collection->take_while( qr/./ )->to_array,
 	$collection->to_array,
 	'take_while(ALWAYS)',
 );

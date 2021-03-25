@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -29,7 +30,7 @@ my $collection = LINQ [
 ];
 
 is_deeply(
-	$collection->default_if_empty("Fox")->to_array,
+	$collection->default_if_empty( "Fox" )->to_array,
 	[qw/ Bee Cat Dog /],
 	'default_if_empty on non-empty collection',
 );
@@ -37,7 +38,7 @@ is_deeply(
 $collection = LINQ [];
 
 is_deeply(
-	$collection->default_if_empty("Fox")->to_array,
+	$collection->default_if_empty( "Fox" )->to_array,
 	[qw/ Fox /],
 	'default_if_empty on empty collection',
 );

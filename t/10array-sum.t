@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -23,13 +24,13 @@ use Test::Modern;
 use LINQ qw( LINQ );
 
 is(
-	LINQ( [1..6] )->sum,
+	LINQ( [ 1 .. 6 ] )->sum,
 	21,
 	'simple sum',
 );
 
 is(
-	LINQ( [qw/Aardvark Bee Cat/] )->sum(sub { length($_) }),
+	LINQ( [qw/Aardvark Bee Cat/] )->sum( sub { length( $_ ) } ),
 	14,
 	'simple sum(CODE)',
 );

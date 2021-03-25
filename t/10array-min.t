@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -23,13 +24,13 @@ use Test::Modern;
 use LINQ qw( LINQ );
 
 is(
-	LINQ( [99, 1..6] )->min,
+	LINQ( [ 99, 1 .. 6 ] )->min,
 	1,
 	'simple min',
 );
 
 is(
-	LINQ( [qw/Aardvark Bee Cat/] )->min(sub { length($_) }),
+	LINQ( [qw/Aardvark Bee Cat/] )->min( sub { length( $_ ) } ),
 	3,
 	'simple min(CODE)',
 );

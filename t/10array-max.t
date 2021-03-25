@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -23,13 +24,13 @@ use Test::Modern;
 use LINQ qw( LINQ );
 
 is(
-	LINQ( [1..6, 0] )->max,
+	LINQ( [ 1 .. 6, 0 ] )->max,
 	6,
 	'simple max',
 );
 
 is(
-	LINQ( [qw/Aardvark Bee Cat/] )->max(sub { length($_) }),
+	LINQ( [qw/Aardvark Bee Cat/] )->max( sub { length( $_ ) } ),
 	8,
 	'simple max(CODE)',
 );

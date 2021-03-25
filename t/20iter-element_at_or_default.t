@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -25,11 +26,11 @@ use Test::Modern;
 use LINQ qw( LINQ );
 use DisneyData qw( people );
 
-my $default = Person::->new(name => "Hans", id => 666);
+my $default = Person::->new( name => "Hans", id => 666 );
 
 for my $idx ( -5, -4, -3, -2, -1, 0, 1, 2, 3, 4 ) {
 	is(
-		people->element_at_or_default($idx, $default),
+		people->element_at_or_default( $idx, $default ),
 		people->to_array->[$idx],
 		"element_at_or_default($idx)",
 	);
@@ -37,7 +38,7 @@ for my $idx ( -5, -4, -3, -2, -1, 0, 1, 2, 3, 4 ) {
 
 for my $idx ( -6, 5 ) {
 	is(
-		people->element_at_or_default($idx, $default),
+		people->element_at_or_default( $idx, $default ),
 		$default,
 		"element_at_or_default($idx)",
 	);

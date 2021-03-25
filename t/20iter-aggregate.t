@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -25,19 +26,24 @@ use Test::Modern;
 use LINQ qw( LINQ );
 
 is(
-	LINQ( [qw/Aardvark Bee Hawk/] )->aggregate(sub {
-		my ($a, $b) = @_;
-		"[$a $b]";
-	}),
+	LINQ( [qw/Aardvark Bee Hawk/] )->aggregate(
+		sub {
+			my ( $a, $b ) = @_;
+			"[$a $b]";
+		}
+	),
 	"[[Aardvark Bee] Hawk]",
 	'simple aggregate',
 );
 
 is(
-	LINQ( [qw/Aardvark Bee Hawk/] )->aggregate(sub {
-		my ($a, $b) = @_;
-		"[$a $b]";
-	}, "INIT"),
+	LINQ( [qw/Aardvark Bee Hawk/] )->aggregate(
+		sub {
+			my ( $a, $b ) = @_;
+			"[$a $b]";
+		},
+		"INIT"
+	),
 	"[[[INIT Aardvark] Bee] Hawk]",
 	'aggregate plus starting value',
 );

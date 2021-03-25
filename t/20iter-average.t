@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -25,13 +26,13 @@ use Test::Modern;
 use LINQ qw( LINQ );
 
 is(
-	LINQ( [1..7] )->average,
+	LINQ( [ 1 .. 7 ] )->average,
 	4,
 	'simple average',
 );
 
 is(
-	LINQ( [qw/Aardvark Bee Hawk/] )->average(sub { length($_) }),
+	LINQ( [qw/Aardvark Bee Hawk/] )->average( sub { length( $_ ) } ),
 	5,
 	'simple average(CODE)',
 );

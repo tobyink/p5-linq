@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -31,7 +32,7 @@ my $collection = LINQ [
 	"Elephant",
 ];
 
-my $length8 = $collection->where(sub { length == 8 });
+my $length8 = $collection->where( sub { length == 8 } );
 
 is_deeply(
 	$length8->to_array,
@@ -40,7 +41,7 @@ is_deeply(
 );
 
 is_deeply(
-	$length8->where(qr/^A/)->to_array,
+	$length8->where( qr/^A/ )->to_array,
 	[qw/ Aardvark Aardwolf /],
 	'simple where(Regexp)',
 );

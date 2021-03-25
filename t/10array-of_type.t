@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -40,15 +41,15 @@ my $collection = LINQ [
 ];
 
 is_deeply(
-	$collection->of_type(Int)->to_array,
+	$collection->of_type( Int )->to_array,
 	[qw/ 6 9 /],
 	'simple of_type',
 );
 
-my $Rounded = Int->plus_coercions(Num, sub { int($_) });
+my $Rounded = Int->plus_coercions( Num, sub { int( $_ ) } );
 
 is_deeply(
-	$collection->of_type($Rounded)->to_array,
+	$collection->of_type( $Rounded )->to_array,
 	[qw/ 6 9 3 /],
 	'of_type plus coercions',
 );

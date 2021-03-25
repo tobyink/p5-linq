@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -44,44 +45,44 @@ my $collection = LINQ [
 object_ok(
 	sub {
 		return exception {
-			$collection->cast(Int)->to_array,
+			$collection->cast( Int )->to_array,
 		};
 	},
 	'$e',
-	isa   => [ qw( LINQ::Exception LINQ::Exception::Cast ) ],
-	can   => [ qw( message collection type ) ],
-	more  => sub {
+	isa  => [qw( LINQ::Exception LINQ::Exception::Cast )],
+	can  => [qw( message collection type )],
+	more => sub {
 		my $e = shift;
-		is($e->collection, $collection, '$e->collection');
-		is($e->type, Int, '$e->type');
+		is( $e->collection, $collection, '$e->collection' );
+		is( $e->type,       Int,         '$e->type' );
 	},
 );
 
-my $Rounded = Int->plus_coercions(Num, sub { int($_) });
+my $Rounded = Int->plus_coercions( Num, sub { int( $_ ) } );
 
 object_ok(
 	sub {
 		return exception {
-			$collection->cast($Rounded)->to_array;
+			$collection->cast( $Rounded )->to_array;
 		};
 	},
 	'$e',
-	isa   => [ qw( LINQ::Exception LINQ::Exception::Cast ) ],
-	can   => [ qw( message collection type ) ],
-	more  => sub {
+	isa  => [qw( LINQ::Exception LINQ::Exception::Cast )],
+	can  => [qw( message collection type )],
+	more => sub {
 		my $e = shift;
-		is($e->collection, $collection, '$e->collection');
-		is($e->type, $Rounded, '$e->type');
+		is( $e->collection, $collection, '$e->collection' );
+		is( $e->type,       $Rounded,    '$e->type' );
 	},
 );
 
 my $Rounded2 = Int->plus_coercions(
-	Num, sub { int($_) },
+	Num, sub { int( $_ ) },
 	Any, sub { 0 },
 );
 
 is_deeply(
-	$collection->cast($Rounded2)->to_array,
+	$collection->cast( $Rounded2 )->to_array,
 	[qw/ 0 0 6 0 0 9 0 0 3 /],
 	'successful cast'
 );

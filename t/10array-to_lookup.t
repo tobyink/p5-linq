@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -24,8 +25,8 @@ use LINQ qw( LINQ );
 use DisneyData qw( people );
 
 is_deeply(
-	people->to_lookup(sub { $_->name }),
-	+{ map +($_->name, $_), people->to_list },
+	people->to_lookup( sub { $_->name } ),
+	+{ map +( $_->name, $_ ), people->to_list },
 	'simple to_lookup',
 );
 

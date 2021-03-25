@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -25,12 +26,12 @@ use Test::Modern;
 use LINQ qw( LINQ );
 use DisneyData qw( pets );
 
-my $begins_S = pets->where(sub { $_->name =~ /^S/ });
-my $ends_n   = pets->where(sub { $_->name =~ /n$/ });
-my $union    = $begins_S->intersect($ends_n, sub { $_[0]->id == $_[1]->id });
+my $begins_S = pets->where( sub { $_->name =~ /^S/ } );
+my $ends_n   = pets->where( sub { $_->name =~ /n$/ } );
+my $union    = $begins_S->intersect( $ends_n, sub { $_[0]->id == $_[1]->id } );
 
 is_deeply(
-	$union->select(sub { $_->name })->order_by(-string, sub { $_ })->to_array,
+	$union->select( sub { $_->name } )->order_by( -string, sub { $_ } )->to_array,
 	[qw/ Sven /],
 	'simple intersect',
 );
