@@ -567,9 +567,7 @@ sub of_type {
 	
 	require Scalar::Util;
 	
-	unless (Scalar::Util::blessed($type)
-	and     $type->can('check')
-	and     $type->can('has_coercion')) {
+	unless (Scalar::Util::blessed($type) and $type->can('check')) {
 		$_throw->(
 			"CallerError",
 			message => "Expected type constraint; got '$type'",
@@ -587,7 +585,7 @@ sub of_type {
 		return $self->where($check);
 	}
 	
-	if ($type->has_coercion) {
+	if ($type->can('has_coercion') and $type->has_coercion) {
 		return $self
 			->select(sub { $type->coerce($_) })
 			->where(sub { $type->check($_) });
