@@ -4,3 +4,9 @@
 	issued  2021-03-25;
 	label   "Initial release".
 
+`LINQ 0.000_002 cpan:TOBYINK`
+	issued  2021-03-25;
+	changeset [
+		item "Implement `default_if_empty`."^^Addition;
+		item "Don't require type constraints passed to `of_type` to have a `has_coercion` method. (Works with Type::Nano.)"^^Change;
+	].
