@@ -8,7 +8,7 @@
 	:homepage             <https://metacpan.org/release/LINQ>;
 	:download-page        <https://metacpan.org/release/LINQ>;
 	:bug-database         <http://rt.cpan.org/Dist/Display.html?Queue=LINQ>;
-#	:repository           [ a :GitRepository; :browse <https://github.com/tobyink/p5-linq> ];
+	:repository           [ a :GitRepository; :browse <https://github.com/tobyink/p5-linq> ];
 	:created              2014-06-10;
 	:license              <http://dev.perl.org/licenses/>;
 	:maintainer           cpan:TOBYINK;
