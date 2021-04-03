@@ -59,7 +59,7 @@ sub min {
 	my $self = shift;
 	return $self->select( @_ )->min if @_;
 	require List::Util;
-	List::Util::min( $self->to_list );
+	&List::Util::min( $self->to_list );
 }
 
 sub max {
@@ -107,7 +107,7 @@ my $_prepare_join = sub {
 		$x->select( sub { [ scalar( $x_keys->( $_[0] ) ), $_[0] ] } )->to_list;
 	my @y_mapped =
 		$y->select( sub { [ scalar( $y_keys->( $_[0] ) ), $_[0] ] } )->to_list;
-		
+	
 	return ( \@x_mapped, \@y_mapped, $hint, $joiner );
 };
 
@@ -576,3 +576,469 @@ sub default_if_empty {
 } #/ sub default_if_empty
 
 1;
+
+__END__
+
+=pod
+
+=encoding utf-8
+
+=head1 NAME
+
+LINQ - the interface which all LINQ collections share
+
+=head1 SYNOPSIS
+
+  use feature 'say';
+  use LINQ 'LINQ';
+  
+  my $double_even_numbers =
+    LINQ( [1..100] )
+      ->where( sub { $_ % 2 == 0 } )
+      ->select( sub { $_ * 2 } );
+  
+  if ( not $double_even_numbers->DOES( 'LINQ::Collection' ) ) {
+    die "What? But you said they all do it!";
+  }
+  
+  for my $n ( $double_even_numbers->to_list ) {
+    say $n;
+  }
+
+=head1 DESCRIPTION
+
+Objects returned by the C<< LINQ() >>, C<< LINQ::Repeat() >>, and
+C<< LINQ::Range() >> functions all provide the LINQ::Collection interface.
+Many of the methods in this interface also return new objects which provide
+this interface.
+
+=head1 METHOD
+
+Many methods take a parameter "CALLABLE". This means they can accept a
+coderef, an object overloading C<< &{} >>, or an arrayref where the first
+item is one of the previous two things and the remainder are treated as
+arguments to curry to the first argument.
+
+If using an arrayref, it is generally permissable to flatten it into a
+list, unless otherwise noted. An example of this can be seen in the
+documentation for C<select>.
+
+=over
+
+=item C<< select( CALLABLE ) >>
+
+LINQ's version of C<map>, except that the code given is always called in
+scalar context, being expected to return exactly one result.
+
+Returns a LINQ::Collection of the results.
+
+  my $people = LINQ( [
+    { name => "Alice", age => 32 },
+    { name => "Bob",   age => 31 },
+    { name => "Carol", age => 34 },
+  ] );
+  
+  my $names = $people->select( sub {
+    return $_->{name};
+  } );
+  
+  for my $name ( $names->to_list ) {
+    print "$name\n";
+  }
+
+Another way of doing the same thing, using currying:
+
+  my $people = LINQ( [
+    { name => "Alice", age => 32 },
+    { name => "Bob",   age => 31 },
+    { name => "Carol", age => 34 },
+  ] );
+  
+  my $BY_HASH_KEY = sub {
+    my ($key) = @_;
+    return $_->{$key};
+  };
+  
+  my $names = $people->select( $BY_HASH_KEY, 'name' );
+  
+  for my $name ( $names->to_list ) {
+    print "$name\n";
+  }
+
+=item C<< select_many( CALLABLE ) >>
+
+If you wanted C<select> to be able to return a list like C<map> does, then
+C<select_many> is what you want. However, rather than returning a Perl list,
+your callable should return a LINQ::Collection or an arrayref.
+
+=item C<< where( CALLABLE ) >>
+
+LINQ's version of C<grep>. Returns a LINQ::Collection of the filtered results.
+
+  my $people = LINQ( [
+    { name => "Alice", age => 32 },
+    { name => "Bob",   age => 31 },
+    { name => "Carol", age => 34 },
+  ] );
+  
+  my $young_people = $people->where( sub {
+    return $_->{age} < 33;
+  } );
+
+=item C<< min( CALLABLE? ) >>
+
+Returns the numerically lowest value in the collection.
+
+  my $lowest = LINQ( [ 5, 1, 2, 3 ] )->min;   # ==> 1
+
+If a callable is provided, then C<select> will be called and the minimum of the
+result will be returned.
+
+  my $people = LINQ( [
+    { name => "Alice", age => 32 },
+    { name => "Bob",   age => 31 },
+    { name => "Carol", age => 34 },
+  ] );
+  
+  my $lowest_age = $people->min( sub { $_->{age} } );   # ==> 31
+
+If you need more flexible comparison (e.g. non-numeric comparison), use
+C<order_by> followed by C<first>.
+
+=item C<< max( CALLABLE? ) >>
+
+Like C<min>, but returns the numerically highest value.
+
+=item C<< sum( CALLABLE? ) >>
+
+Like C<min>, but returns the sum of all values in the collection.
+
+=item C<< average( CALLABLE? ) >>
+
+Takes C<sum>, and divides by the count of items in the collection.
+
+  my $people = LINQ( [
+    { name => "Alice", age => 32 },
+    { name => "Bob",   age => 31 },
+    { name => "Carol", age => 34 },
+  ] );
+  
+  my $average_age = $people->average( sub {
+    return $_->{age};
+  } );   # ==> 32.33333
+
+=item C<< aggregate( CALLABLE, INITIAL? ) >>
+
+LINQ's version of C<reduce> (from L<List::Util>). We pass C<< $a >> and
+C<< $b >> as the last arguments to CALLABLE, rather than using the package
+variables like List::Util does.
+
+The CALLABLE must not be a flattened list, but may still be an arrayref.
+INITIAL is an initial value.
+
+  my $people = LINQ( [
+    { name => "Alice", age => 32 },
+    { name => "Bob",   age => 31 },
+    { name => "Carol", age => 34 },
+  ] );
+  
+  my dotted_names = $people
+    ->select( sub { $_->{name} } )
+    ->aggregate( sub {
+       my ( $a, $b ) = @_;
+       return "$a.$b";
+    } );
+  
+  print "$dotted_names\n";  # ==> Alice.Bob.Carol
+
+=item C<< join( Y, HINT?, X_KEYS, Y_KEYS, JOINER ) >>
+
+This is akin to an SQL join.
+
+  my $people = LINQ( [
+    { name => "Alice", dept => 'Marketing' },
+    { name => "Bob",   dept => 'IT' },
+    { name => "Carol", dept => 'IT' },
+  ] );
+  
+  my $departments = LINQ( [
+    { dept_name => 'Accounts',  cost_code => 1 },
+    { dept_name => 'IT',        cost_code => 7 },
+    { dept_name => 'Marketing', cost_code => 8 },
+  ] );
+  
+  my $BY_HASH_KEY = sub {
+    my ($key) = @_;
+    return $_->{$key};
+  };
+  
+  my $joined = $people->join(
+    $departments,
+    -inner,                        # inner join
+    [ $BY_HASH_KEY, 'dept' ],      # select from $people by hash key 
+    [ $BY_HASH_KEY, 'dept_name' ], # select from $departments by hash key
+    sub {
+      my ( $person, $dept ) = @_;
+      return {
+        name         => $person->{name},
+        dept         => $person->{dept},
+        expense_code => $dept->{cost_code},
+      };
+    },
+  );
+
+Hints C<< -inner >>, C<< -left >>, C<< -right >>, and C<< -outer >> are
+supported, analagous to the joins with the same names in SQL.
+
+X_KEYS and Y_KEYS are non-list callables which return the values to join the
+two collections by.
+
+JOINER is a callable (which may be a flattened list) which is passed items
+from each of the two collections and should return a new item. In the case
+of left/right/outer joins, one of those items may be undef.
+
+=item C<< group_join( Y, HINT?, X_KEYS, Y_KEYS, JOINER ) >>
+
+Similar to C<group> except that rather than JOINER being called for every
+X/Y combination, all the Ys for a particular X are put in a collection, and
+the JOINER is called for each X and passed the collection of Ys.
+
+The only hints supported are C<< -inner >> and C<< -left >>.
+
+This is best explained with a full example:
+
+  my $departments = LINQ( [
+    { dept_name => 'Accounts',  cost_code => 1 },
+    { dept_name => 'IT',        cost_code => 7 },
+    { dept_name => 'Marketing', cost_code => 8 },
+  ] );
+  
+  my $people = LINQ( [
+    { name => "Alice", dept => 'Marketing' },
+    { name => "Bob",   dept => 'IT' },
+    { name => "Carol", dept => 'IT' },
+  ] );
+  
+  my $BY_HASH_KEY = sub {
+    my ($key) = @_;
+    return $_->{$key};
+  };
+  
+  my $joined = $departments->group_join(
+    $people,
+    -left,                         # left join
+    [ $BY_HASH_KEY, 'dept_name' ], # select from $departments by hash key
+    [ $BY_HASH_KEY, 'dept' ],      # select from $people by hash key 
+    sub {
+      my ( $dept, $people ) = @_;  # $people is a LINQ::Collection 
+      return {
+        dept      => $dept->{dept_name},
+        cost_code => $dept->{cost_code},
+        people    => $people->select( $BY_HASH_KEY, 'name' )->to_array,
+      };
+    },
+  );
+  
+  # [
+  #   {
+  #     'cost_code' => 1,
+  #     'dept' => 'Accounts',
+  #     'people' => []
+  #   },
+  #   {
+  #     'cost_code' => 7,
+  #     'dept' => 'IT',
+  #     'people' => [
+  #       'Bob',
+  #       'Carol'
+  #     ]
+  #   },
+  #   {
+  #     'cost_code' => 8,
+  #     'dept' => 'Marketing',
+  #     'people' => [
+  #       'Alice'
+  #     ]
+  #   }
+
+=item C<< take( N ) >>
+
+Takes just the first N items from a collection, returning a new collection.
+
+=item C<< take_while( CALLABLE ) >>
+
+Takes items from the collection, stopping at the first item where CALLABLE
+returns false.
+
+=item C<< skip( N ) >>
+
+Documentation not written yet.
+
+=item C<< skip_while( CALLABLE ) >>
+
+Documentation not written yet.
+
+=item C<< concat( COLLECTION ) >>
+
+Documentation not written yet.
+
+=item C<< order_by( HINT?, CALLABLE ) >>
+
+Documentation not written yet.
+
+=item C<< then_by( HINT?, CALLABLE ) >>
+
+Not implemented.
+
+=item C<< order_by_descending( HINT?, CALLABLE ) >>
+
+Documentation not written yet.
+
+=item C<< then_by_descending( HINT?, CALLABLE ) >>
+
+Not implemented.
+
+=item C<< reverse >>
+
+Reverses the order of the collection.
+
+=item C<< group_by( CALLABLE ) >>
+
+Documentation not written yet.
+
+=item C<< distinct( CALLABLE? ) >>
+
+Documentation not written yet.
+
+=item C<< union( COLLECTION, CALLABLE? ) >>
+
+Documentation not written yet.
+
+=item C<< intersect( COLLECTION, CALLABLE? ) >>
+
+Documentation not written yet.
+
+=item C<< except( COLLECTION, CALLABLE? ) >>
+
+Documentation not written yet.
+
+=item C<< sequence_equal( COLLECTION, CALLABLE? ) >>
+
+Documentation not written yet.
+
+=item C<< first( CALLABLE? ) >>
+
+Documentation not written yet.
+
+=item C<< first_or_default( CALLABLE?, DEFAULT ) >>
+
+Documentation not written yet.
+
+=item C<< last( CALLABLE? ) >>
+
+Documentation not written yet.
+
+=item C<< last_or_default( CALLABLE?, DEFAULT ) >>
+
+Documentation not written yet.
+
+=item C<< single( CALLABLE? ) >>
+
+Documentation not written yet.
+
+=item C<< single_or_default( CALLABLE?, DEFAULT ) >>
+
+Documentation not written yet.
+
+=item C<< element_at( N ) >>
+
+Documentation not written yet.
+
+=item C<< element_at_or_default( N, DEFAULT ) >>
+
+Documentation not written yet.
+
+=item C<< any( CALLABLE? ) >>
+
+Documentation not written yet.
+
+=item C<< all( CALLABLE? ) >>
+
+Documentation not written yet.
+
+=item C<< containes( args?????? ) >>
+
+Documentation not written yet.
+
+=item C<< count >>
+
+Documentation not written yet.
+
+=item C<< to_list >>
+
+Documentation not written yet.
+
+=item C<< to_array >>
+
+Documentation not written yet.
+
+=item C<< to_dictionary( CALLABLE ) >>
+
+Documentation not written yet.
+
+=item C<< to_lookup( CALLABLE ) >>
+
+Alias for C<to_dictionary>.
+
+=item C<< to_iterator >>
+
+Documentation not written yet.
+
+=item C<< cast( TYPE ) >>
+
+Documentation not written yet.
+
+=item C<< of_type( TYPE ) >>
+
+Documentation not written yet.
+
+=item C<< zip( COLLECTION, CALLABLE ) >>
+
+Documentation not written yet.
+
+=item C<< default_if_empty( ITEM ) >>
+
+Documentation not written yet.
+
+=item C<< target_class >>
+
+Documentation not written yet.
+
+=back
+
+=head1 BUGS
+
+Please report any bugs to
+L<http://rt.cpan.org/Dist/Display.html?Queue=LINQ>.
+
+=head1 SEE ALSO
+
+L<https://en.wikipedia.org/wiki/Language_Integrated_Query>
+
+=head1 AUTHOR
+
+Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
+
+=head1 COPYRIGHT AND LICENCE
+
+This software is copyright (c) 2014, 2021 by Toby Inkster.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=head1 DISCLAIMER OF WARRANTIES
+
+THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
