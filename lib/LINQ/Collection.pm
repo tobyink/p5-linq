@@ -880,7 +880,10 @@ Documentation not written yet.
 
 =item C<< concat( COLLECTION ) >>
 
-Documentation not written yet.
+Returns a new collection by concatenating this collection with another
+collection.
+
+  my $deck_of_cards = $red_cards->concat( $black_cards );
 
 =item C<< order_by( HINT?, CALLABLE ) >>
 
@@ -928,63 +931,105 @@ Documentation not written yet.
 
 =item C<< first( CALLABLE? ) >>
 
-Documentation not written yet.
+Returns the first item in a collection.
+
+If CALLABLE is provided, returns the first item in the collection where
+CALLABLE returns true.
+
+If there is no item to return, does not return undef, but throws a
+LINQ::Exception::NotFound exception.
 
 =item C<< first_or_default( CALLABLE?, DEFAULT ) >>
 
-Documentation not written yet.
+Like C<first>, but instead of throwing an exception, will return the DEFAULT.
 
 =item C<< last( CALLABLE? ) >>
 
-Documentation not written yet.
+Returns the last item in a collection.
+
+If CALLABLE is provided, returns the last item in the collection where
+CALLABLE returns true.
+
+If there is no item to return, does not return undef, but throws a
+LINQ::Exception::NotFound exception.
 
 =item C<< last_or_default( CALLABLE?, DEFAULT ) >>
 
-Documentation not written yet.
+Like C<last>, but instead of throwing an exception, will return the DEFAULT.
 
 =item C<< single( CALLABLE? ) >>
 
-Documentation not written yet.
+Returns the only item in a collection.
+
+If CALLABLE is provided, returns the only item in the collection where
+CALLABLE returns true.
+
+If there is no item to return, does not return undef, but throws a
+LINQ::Exception::NotFound exception.
+
+If there are multiple items in the collection, or multiple items where
+CALLABLE returns true, throws a LINQ::Exception::MultipleFound exception.
 
 =item C<< single_or_default( CALLABLE?, DEFAULT ) >>
 
-Documentation not written yet.
+Like C<single> but rather than throwing an exception, will return DEFAULT.
 
 =item C<< element_at( N ) >>
 
-Documentation not written yet.
+Returns element N within the collection. N may be negative to count from the
+end of the collection. Collections are indexed from zero.
+
+If N exceeds the length of the collection, throws a LINQ::Exception::NotFound
+exception.
 
 =item C<< element_at_or_default( N, DEFAULT ) >>
 
-Documentation not written yet.
+Like C<element_at> but rather than throwing an exception, will return DEFAULT.
 
 =item C<< any( CALLABLE? ) >>
 
-Documentation not written yet.
+Returns true if CALLABLE returns true for any item in the collection.
 
 =item C<< all( CALLABLE? ) >>
 
-Documentation not written yet.
+Returns true if CALLABLE returns true for every item in the collection.
 
-=item C<< containes( args?????? ) >>
+=item C<< contains( ITEM, CALLABLE? ) >>
 
-Documentation not written yet.
+Returns true if the collection contains ITEM. By default, this is checked
+using numeric equality.
+
+If CALLABLE is given, this is passed two items and should return true
+if they should be considered identical/equivalent.
+
+  my $SAME_NAME = sub {
+    $_[0]{name} eq $_[1]{name};
+  };
+  
+  if ( $people->contains( { name => "Bob" }, $SAME_NAME ) ) {
+    print "The collection includes Bob.\n";
+  }
 
 =item C<< count >>
 
-Documentation not written yet.
+Returns the size of the collection. (Number of items.)
 
 =item C<< to_list >>
 
-Documentation not written yet.
+Returns the collection as a list.
 
 =item C<< to_array >>
 
-Documentation not written yet.
+Returns an arrayref for the collection. This may be a tied arrayref and you
+should not assume it will be writable.
 
 =item C<< to_dictionary( CALLABLE ) >>
 
-Documentation not written yet.
+The CALLABLE will be called for each item in the collection and is expected to
+return a string key.
+
+The method will return a hashref mapping the keys to each item in the
+collection.
 
 =item C<< to_lookup( CALLABLE ) >>
 
@@ -992,27 +1037,65 @@ Alias for C<to_dictionary>.
 
 =item C<< to_iterator >>
 
-Documentation not written yet.
+Returns a coderef which can be used to iterate through the collection.
+
+  my $people = LINQ( [
+    { name => "Alice", dept => 'Marketing' },
+    { name => "Bob",   dept => 'IT' },
+    { name => "Carol", dept => 'IT' },
+  ] );
+  
+  my $next_person = $people->to_iterator;
+  
+  while ( my $person = $next_person->() ) {
+    print $person->{name}, "\n";
+  }
 
 =item C<< cast( TYPE ) >>
 
-Documentation not written yet.
+Given a type constraint (see L<Type::Tiny>) will attempt to coerce every item
+in the collection to the type, and will return the collection of coerced
+values. If any item cannot be coerced, throws a LINQ::Exception::Cast
+exception.
 
 =item C<< of_type( TYPE ) >>
 
-Documentation not written yet.
+Given a type constraint (see L<Type::Tiny>) will attempt to coerce every item
+in the collection to the type, and will return the collection of coerced
+values. Any items which cannot be coerced will be skipped.
 
 =item C<< zip( COLLECTION, CALLABLE ) >>
 
-Documentation not written yet.
+Will loop through both collections in parallel and pass one item from each
+collection to CALLABLE as arguments.
+
+If the two collections are of different sizes, will stop after exhausing the
+shorter collection.
 
 =item C<< default_if_empty( ITEM ) >>
 
-Documentation not written yet.
+If this collection contains one or more items, returns itself.
+
+If the collection is empty, returns a new collection containing just a single
+item, given as a parameter.
+
+  my $collection = $people->default_if_empty( "Bob" );
+  
+  # Equivalent to:
+  my $collection = ( $people->count == 0 ) ? LINQ( [ "Bob" ] ) : $people;
 
 =item C<< target_class >>
 
-Documentation not written yet.
+This returns either a class name or a coderef, which will be the usual way
+that the methods defined in LINQ::Collection will create new collections
+(for example, when they need to return a collection).
+
+Given a collection, you can create a new collection like this:
+
+  my $target_class   = $old_collection->target_class;
+  my $new_collection = ref($target_class)
+    ? $target_class->( @items )
+    : $target_class->new( @items );
 
 =back
 
