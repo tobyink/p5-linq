@@ -65,7 +65,7 @@ if ( $] < 5.010000 ) {
 	
 	sub is_fully_extended {
 		my $self = shift;
-		@{ $self->[__EXHAUSTED] };
+		$self->[__EXHAUSTED];
 	}
 	
 	sub extend_to {
@@ -106,16 +106,22 @@ our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.000_002';
 
 use Role::Tiny::With ();
+use LINQ::Util::Internal ();
 
 Role::Tiny::With::with( qw( LINQ::Collection ) );
 
 sub new {
 	my $class = shift;
-	if ( @_ == 1 and ref( $_[0] ) eq 'CODE' ) {
-		tie my ( @arr ), 'LINQ::Iterator::_LazyList', @_;
+	if ( @_ ) {
+		tie my ( @arr ), 'LINQ::Iterator::_LazyList', LINQ::Util::Internal::assert_code( @_ );
 		return bless \@arr, $class;
 	}
 	die "Expected to be given a CODE ref!";
+}
+
+sub _guts {
+	my $self = shift;
+	tied( @$self );
 }
 
 sub target_class {
@@ -141,7 +147,6 @@ sub to_list {
 
 sub element_at {
 	my $self = shift;
-	my ( $n ) = @_;
 	
 	if ( my $guts = $self->_guts ) {
 		my $ref = $guts->fetch_ref( @_ );
@@ -150,11 +155,50 @@ sub element_at {
 		'LINQ::Exception::NotFound'->throw( collection => $self );
 	}
 	
+	$self->LINQ::Collection::element_at( @_ );
 } #/ sub element_at
 
-sub _guts {
+sub select {
 	my $self = shift;
-	tied( @$self );
+	
+	if ( my $guts = $self->_guts ) {
+		my $map = LINQ::Util::Internal::assert_code( @_ );
+		my $idx = 0;
+		return __PACKAGE__->new( sub {
+			my $val = $guts->fetch_ref( $idx++ );
+			if ( ! $val ) {
+				require LINQ;
+				return LINQ::END();
+			}
+			local $_ = $$val;
+			scalar $map->( $_ );
+		} );
+	}
+	
+	$self->LINQ::Collection::select( @_ );
+}
+
+sub where {
+	my $self = shift;
+	
+	if ( my $guts = $self->_guts ) {
+		my $check = LINQ::Util::Internal::assert_code( @_ );
+		my $idx   = 0;
+		return __PACKAGE__->new( sub {
+			GETVAL: {
+				my $val = $guts->fetch_ref( $idx++ );
+				if ( ! $val ) {
+					require LINQ;
+					return LINQ::END();
+				}
+				local $_ = $$val;
+				redo GETVAL unless $check->( $_ );
+				return $$val;
+			};
+		} );
+	}
+	
+	$self->LINQ::Collection::where( @_ );
 }
 
 1;

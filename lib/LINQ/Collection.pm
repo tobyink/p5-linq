@@ -8,56 +8,9 @@ our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.000_002';
 
 use Role::Tiny;
+use LINQ::Util::Internal ();
 
 requires qw( target_class to_list );
-
-my $_throw = sub {
-	require LINQ::Exception;
-	my $e = shift;
-	"LINQ::Exception::$e"->throw( @_ );
-};
-
-my $_assert_code = sub {
-	my $code = shift;
-	
-	if ( ref( $code ) eq 'ARRAY' ) {
-		@_    = @$code;
-		$code = shift;
-	}
-	
-	if ( ref( $code ) eq 'Regexp' ) {
-		$_throw->(
-			"CallerError",
-			message => "Regexp cannot accept curried arguments"
-		) if @_;
-		
-		my $re = $code;
-		return sub { m/$re/ };
-	}
-	
-	if ( ref( $code ) ne 'CODE' ) {
-		require Scalar::Util;
-		require overload;
-		
-		$_throw->(
-			"CallerError",
-			message => "Expected coderef; got '$code'"
-		) unless Scalar::Util::blessed( $code ) && overload::Method( $code, '&{}' );
-	}
-	
-	if ( @_ ) {
-		my @curry = @_;
-		return sub { $code->( @curry, @_ ) };
-	}
-	
-	return $code;
-};
-
-my $_create_linq = sub {
-	my $self  = shift;
-	my $class = $self->target_class;
-	ref( $class ) ? $class->( @_ ) : $class->new( @_ );
-};
 
 my $_coerce = sub {
 	my ( $thing ) = @_;
@@ -72,7 +25,7 @@ my $_coerce = sub {
 		return LINQ::Array::->new( $thing );
 	}
 	
-	$_throw->(
+	LINQ::Util::Internal::throw(
 		"CallerError",
 		message => "Expected a LINQ collection; got '$thing'"
 	);
@@ -80,25 +33,25 @@ my $_coerce = sub {
 
 sub select {
 	my $self = shift;
-	my $map  = $_assert_code->( @_ );
-	$self->$_create_linq(
-		[ map scalar( $map->( $_ ) ), $self->to_list ],
+	my $map  = LINQ::Util::Internal::assert_code( @_ );
+	LINQ::Util::Internal::create_linq(
+		$self => [ map scalar( $map->( $_ ) ), $self->to_list ],
 	);
 }
 
 sub where {
 	my $self   = shift;
-	my $filter = $_assert_code->( @_ );
-	$self->$_create_linq(
-		[ grep $filter->( $_ ), $self->to_list ],
+	my $filter = LINQ::Util::Internal::assert_code( @_ );
+	LINQ::Util::Internal::create_linq(
+		$self => [ grep $filter->( $_ ), $self->to_list ],
 	);
 }
 
 sub select_many {
 	my $self = shift;
-	my $map  = $_assert_code->( @_ );
-	$self->$_create_linq(
-		[ map $map->( $_ )->$_coerce->to_list, $self->to_list ],
+	my $map  = LINQ::Util::Internal::assert_code( @_ );
+	LINQ::Util::Internal::create_linq(
+		$self => [ map $map->( $_ )->$_coerce->to_list, $self->to_list ],
 	);
 }
 
@@ -130,7 +83,7 @@ sub average {
 
 sub aggregate {
 	my $self    = shift;
-	my $code    = $_assert_code->( shift );
+	my $code    = LINQ::Util::Internal::assert_code( shift );
 	my $wrapper = sub { $code->( $a, $b ) };
 	require List::Util;
 	&List::Util::reduce( $wrapper, @_, $self->to_list );
@@ -141,11 +94,11 @@ my $_prepare_join = sub {
 	my $y = shift;
 	
 	my $hint   = ref( $_[0] ) ? -inner : shift( @_ );
-	my $x_keys = $_assert_code->( shift );
-	my $y_keys = $_assert_code->( shift );
-	my $joiner = $_assert_code->( @_ );
+	my $x_keys = LINQ::Util::Internal::assert_code( shift );
+	my $y_keys = LINQ::Util::Internal::assert_code( shift );
+	my $joiner = LINQ::Util::Internal::assert_code( @_ );
 	
-	$hint =~ /\A-(inner|left|right|outer)\z/ or $_throw->(
+	$hint =~ /\A-(inner|left|right|outer)\z/ or LINQ::Util::Internal::throw(
 		"CallerError",
 		message => "Expected a recognized join type; got '$hint'"
 	);
@@ -199,13 +152,13 @@ sub join {
 		}
 	}
 	
-	$_[0]->$_create_linq( \@joined );
+	LINQ::Util::Internal::create_linq( $_[0], \@joined );
 } #/ sub join
 
 sub group_join {
 	my ( $x_mapped, $y_mapped, $hint, $joiner ) = $_prepare_join->( @_ );
 	
-	$hint =~ /\A-(left|inner)\z/ or $_throw->(
+	$hint =~ /\A-(left|inner)\z/ or LINQ::Util::Internal::throw(
 		"CallerError",
 		message => "Join type '$hint' not supported for group_join",
 	);
@@ -219,23 +172,23 @@ sub group_join {
 		
 		if ( @group or $hint eq -left ) {
 			my $a = $X->[1];
-			my $b = $_[0]->$_create_linq( \@group );
+			my $b = LINQ::Util::Internal::create_linq( $_[0], \@group );
 			push @joined, scalar $joiner->( $a, $b );
 		}
 	} #/ for my $Xi ( 0 .. $#$x_mapped)
 	
-	$_[0]->$_create_linq( \@joined );
+	LINQ::Util::Internal::create_linq( $_[0], \@joined );
 } #/ sub group_join
 
 sub take {
 	my $self = shift;
 	my ( $n ) = @_;
-	$self->where( sub { $n-- > 0 } );
+	$self->take_while( sub { $n-- > 0 } );
 }
 
 sub take_while {
 	my $self    = shift;
-	my $filter  = $_assert_code->( @_ );
+	my $filter  = LINQ::Util::Internal::assert_code( @_ );
 	my $stopped = 0;
 	$self->where(
 		sub {
@@ -255,7 +208,7 @@ sub skip {
 
 sub skip_while {
 	my $self     = shift;
-	my $filter   = $_assert_code->( @_ );
+	my $filter   = LINQ::Util::Internal::assert_code( @_ );
 	my $skipping = 1;
 	$self->where(
 		sub {
@@ -270,17 +223,17 @@ sub skip_while {
 sub concat {
 	my $self  = shift;
 	my $other = $_[0];
-	return $self->$_create_linq( [ $self->to_list, $other->to_list ] );
+	return LINQ::Util::Internal::create_linq( $self, [ $self->to_list, $other->to_list ] );
 }
 
 sub order_by {
 	my $self   = shift;
 	my $hint   = ref( $_[0] ) ? -numeric : shift( @_ );
-	my $keygen = $_assert_code->( @_ );
+	my $keygen = LINQ::Util::Internal::assert_code( @_ );
 	
 	if ( $hint eq -string ) {
-		return $self->$_create_linq(
-			[
+		return LINQ::Util::Internal::create_linq(
+			$self => [
 				map $_->[1],
 				sort { $a->[0] cmp $b->[0] }
 					map [ $keygen->( $_ ), $_ ],
@@ -290,8 +243,8 @@ sub order_by {
 	} #/ if ( $hint eq -string )
 	
 	elsif ( $hint eq -numeric ) {
-		return $self->$_create_linq(
-			[
+		return LINQ::Util::Internal::create_linq(
+			$self => [
 				map $_->[1],
 				sort { $a->[0] <=> $b->[0] }
 					map [ $keygen->( $_ ), $_ ],
@@ -300,14 +253,14 @@ sub order_by {
 		);
 	} #/ elsif ( $hint eq -numeric)
 	
-	$_throw->(
+	LINQ::Util::Internal::throw(
 		"CallerError",
 		message => "Expected '-numeric' or '-string'; got '$hint'"
 	);
 } #/ sub order_by
 
 sub then_by {
-	$_throw->( "Unimplemented", method => "then_by" );
+	LINQ::Util::Internal::throw( "Unimplemented", method => "then_by" );
 }
 
 sub order_by_descending {
@@ -316,19 +269,19 @@ sub order_by_descending {
 }
 
 sub then_by_descending {
-	$_throw->( "Unimplemented", method => "then_by_descending" );
+	LINQ::Util::Internal::throw( "Unimplemented", method => "then_by_descending" );
 }
 
 sub reverse {
 	my $self = shift;
-	$self->$_create_linq(
-		[ reverse( $self->to_list ) ],
+	LINQ::Util::Internal::create_linq(
+		$self => [ reverse( $self->to_list ) ],
 	);
 }
 
 sub group_by {
 	my $self   = shift;
-	my $keygen = $_assert_code->( @_ );
+	my $keygen = LINQ::Util::Internal::assert_code( @_ );
 	
 	my @keys;
 	my %values;
@@ -343,11 +296,11 @@ sub group_by {
 	}
 	
 	require LINQ::Grouping;
-	$self->$_create_linq(
-		[
+	LINQ::Util::Internal::create_linq(
+		$self => [
 			map LINQ::Grouping::->new(
 				key    => $_,
-				values => $self->$_create_linq( $values{$_} ),
+				values => LINQ::Util::Internal::create_linq( $self, $values{$_} ),
 			),
 			@keys
 		]
@@ -356,7 +309,7 @@ sub group_by {
 
 sub distinct {
 	my $self    = shift;
-	my $compare = @_ ? $_assert_code->( @_ ) : sub { $_[0] == $_[1] };
+	my $compare = @_ ? LINQ::Util::Internal::assert_code( @_ ) : sub { $_[0] == $_[1] };
 	
 	my @already;
 	$self->where(
@@ -380,14 +333,14 @@ sub union {
 sub intersect {
 	my $self    = shift;
 	my $other   = shift;
-	my @compare = @_ ? $_assert_code->( @_ ) : sub { $_[0] == $_[1] };
+	my @compare = @_ ? LINQ::Util::Internal::assert_code( @_ ) : sub { $_[0] == $_[1] };
 	$self->where( sub { $other->contains( $_, @compare ) } );
 }
 
 sub except {
 	my $self    = shift;
 	my $other   = shift;
-	my @compare = @_ ? $_assert_code->( @_ ) : sub { $_[0] == $_[1] };
+	my @compare = @_ ? LINQ::Util::Internal::assert_code( @_ ) : sub { $_[0] == $_[1] };
 	$self->where( sub { not $other->contains( $_, @compare ) } );
 }
 
@@ -402,7 +355,7 @@ sub sequence_equal {
 	return !!0 unless @list1 == @list2;
 	
 	if ( @compare ) {
-		my $compare = $_assert_code->( @compare );
+		my $compare = LINQ::Util::Internal::assert_code( @compare );
 		for my $i ( 0 .. $#list1 ) {
 			return !!0 unless $compare->( $list1[$i], $list2[$i] );
 		}
@@ -447,7 +400,7 @@ sub first {
 	my $self  = shift;
 	my $found = $self->where( @_ );
 	return $found->element_at( 0 ) if $found->count > 0;
-	$_throw->( 'NotFound', collection => $self );
+	LINQ::Util::Internal::throw( 'NotFound', collection => $self );
 }
 
 sub first_or_default {
@@ -458,7 +411,7 @@ sub last {
 	my $self  = shift;
 	my $found = $self->where( @_ );
 	return $found->element_at( -1 ) if $found->count > 0;
-	$_throw->( 'NotFound', collection => $self );
+	LINQ::Util::Internal::throw( 'NotFound', collection => $self );
 }
 
 sub last_or_default {
@@ -470,8 +423,8 @@ sub single {
 	my $found = $self->where( @_ );
 	return $found->element_at( 0 ) if $found->count == 1;
 	$found->count == 0
-		? $_throw->( 'NotFound', collection => $self )
-		: $_throw->( 'MultipleFound', collection => $self, found => $found );
+		? LINQ::Util::Internal::throw( 'NotFound', collection => $self )
+		: LINQ::Util::Internal::throw( 'MultipleFound', collection => $self, found => $found );
 }
 
 sub single_or_default {
@@ -485,11 +438,11 @@ sub element_at {
 	my @list = $self->to_list;
 	
 	if ( $i > $#list ) {
-		$_throw->( 'NotFound', collection => $self );
+		LINQ::Util::Internal::throw( 'NotFound', collection => $self );
 	}
 	
 	if ( $i < 0 - @list ) {
-		$_throw->( 'NotFound', collection => $self );
+		LINQ::Util::Internal::throw( 'NotFound', collection => $self );
 	}
 	
 	$list[$i];
@@ -517,7 +470,7 @@ sub contains {
 	
 	if ( @args ) {
 		splice( @args, 1, 0, $x );
-		return $self->any( $_assert_code->( @args ) );
+		return $self->any( LINQ::Util::Internal::assert_code( @args ) );
 	}
 	
 	$self->any( sub { $_ == $x } );
@@ -537,7 +490,7 @@ sub to_array {
 
 sub to_dictionary {
 	my $self = shift;
-	my ( $keygen ) = $_assert_code->( @_ );
+	my ( $keygen ) = LINQ::Util::Internal::assert_code( @_ );
 	+{ map +( $keygen->( $_ ), $_ ), $self->to_list };
 }
 
@@ -559,7 +512,7 @@ sub cast {
 	my $cast = $self->of_type( @_ );
 	return $cast if $self->count == $cast->count;
 	
-	$_throw->( "Cast", collection => $self, type => $type );
+	LINQ::Util::Internal::throw( "Cast", collection => $self, type => $type );
 }
 
 sub of_type {
@@ -569,7 +522,7 @@ sub of_type {
 	require Scalar::Util;
 	
 	unless ( Scalar::Util::blessed( $type ) and $type->can( 'check' ) ) {
-		$_throw->(
+		LINQ::Util::Internal::throw(
 			"CallerError",
 			message => "Expected type constraint; got '$type'",
 		);
@@ -598,7 +551,7 @@ sub of_type {
 sub zip {
 	my $self  = shift;
 	my $other = shift;
-	my $map   = $_assert_code->( @_ );
+	my $map   = LINQ::Util::Internal::assert_code( @_ );
 	
 	my @self  = $self->to_list;
 	my @other = $other->to_list;
@@ -608,7 +561,7 @@ sub zip {
 		push @results, scalar $map->( shift( @self ), shift( @other ) );
 	}
 	
-	$self->$_create_linq( \@results );
+	LINQ::Util::Internal::create_linq( $self => \@results );
 } #/ sub zip
 
 sub default_if_empty {
@@ -616,7 +569,7 @@ sub default_if_empty {
 	my $item = shift;
 	
 	if ( $self->count == 0 ) {
-		return $self->$_create_linq( [$item] );
+		return LINQ::Util::Internal::create_linq( $self => [$item] );
 	}
 	
 	return $self;
