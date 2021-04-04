@@ -10,3 +10,10 @@
 		item "Implement `default_if_empty`."^^Addition;
 		item "Don't require type constraints passed to `of_type` to have a `has_coercion` method. (Works with Type::Nano.)"^^Change;
 	].
+
+`LINQ 0.000_003 cpan:TOBYINK`
+	issued  2021-04-04;
+	changeset [
+		item "Make the callable parameter to `order_by` and `order_by_descending` optional."^^Change;
+		item "Document the LINQ::Collection interface."^^Documentation;
+	].

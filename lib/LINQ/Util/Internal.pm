@@ -5,7 +5,7 @@ use warnings;
 package LINQ::Util::Internal;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_002';
+our $VERSION   = '0.000_003';
 
 sub create_linq {
 	my $parent = shift;
