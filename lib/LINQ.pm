@@ -93,11 +93,11 @@ LINQ - an interpretation of Microsoft's Language Integrated Query
 
 =head1 SYNOPSIS
 
-  use feature 'say';
-  use LINQ 'LINQ';
+  use feature qw( say );
+  use LINQ qw( LINQ )';
   
   my $double_even_numbers =
-    LINQ( [1..100] )
+    LINQ( [ 1 .. 100 ] )
       ->where( sub { $_ % 2 == 0 } )
       ->select( sub { $_ * 2 } );
   
@@ -113,6 +113,51 @@ SQL tables, XML and JSON data, etc.
 
 Not much is documented yet, but the test suite includes numerous examples
 of LINQ's usage.
+
+=head1 FUNCTIONS
+
+The C<LINQ>, C<Range>, and C<Repeat> functions return LINQ collections,
+objects implementing the L<LINQ::Collection> interface.
+
+=over
+
+=item C<< LINQ( SOURCE ) >>
+
+Creates a LINQ collection from a source. The source may be an existing LINQ
+collection, which will be returned as-is, an arrayref of items, or a coderef
+which will be called in scalar context and expected to return a single item
+each time it is called. It should return the special value C<< LINQ::END() >>
+to indicate that the end of the collection has been reached.
+
+C<LINQ> may be exported, but is not exported by default. 
+
+=item C<< Range( MIN, MAX ) >>
+
+Returns a LINQ collection containing the range of numbers from MIN to MAX.
+If MIN is undef, it is treated as 0. If MAX is undef, it is treated as positive
+infinity.
+
+If you want a range from 0 to negative infinity, use:
+
+  my $below_zero = Range( 0, undef )->select( sub { -$_ } );
+
+C<Range> may be exported, but is not exported by default. 
+
+=item C<< Repeat( VALUE, COUNT ) >>
+
+Returns a LINQ collection containing the same value multiple times. If COUNT
+is undef, then it is treated as infinity.
+
+C<Repeat> may be exported, but is not exported by default. 
+
+=item C<< END() >>
+
+Returns the special value C<< LINQ::END() >>.
+
+C<Repeat> may be exported, but is not exported by default, and I recommend
+calling it by its fully qualified name for clarity. 
+
+=back
 
 =head1 HISTORY
 
