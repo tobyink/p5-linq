@@ -195,10 +195,9 @@ sub take_while {
 	require LINQ;
 	require LINQ::Iterator;
 	'LINQ::Iterator'->new( sub {
-		return LINQ::END() if $stopped;
 		local ( $@, $_ );
 		my $next;
-		my $ok = eval { $next = $self->element_at( $idx ); 1 };
+		my $ok = eval { $next = $self->element_at( $idx ); not $stopped };
 		my $e  = $@;
 		if ( $ok and $filter->( $_ = $next ) ) {
 			++$idx;
@@ -209,7 +208,6 @@ sub take_while {
 			die( $e ) unless Scalar::Util::blessed( $e );
 			die( $e ) unless $e->isa( 'LINQ::Exception::NotFound' );
 		}
-		
 		$stopped = 1;
 		return LINQ::END();
 	} );
@@ -669,7 +667,8 @@ this interface.
 Many methods take a parameter "CALLABLE". This means they can accept a
 coderef, an object overloading C<< &{} >>, or an arrayref where the first
 item is one of the previous two things and the remainder are treated as
-arguments to curry to the first argument.
+arguments to curry to the first argument. A quoted regexp C<< qr/.../ >> can
+also be used as a callable.
 
 If using an arrayref, it is generally permissable to flatten it into a
 list, unless otherwise noted. An example of this can be seen in the

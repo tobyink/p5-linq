@@ -67,7 +67,24 @@ my $order = sub { $_->[0] };
 	);
 }
 
-note
-	"the behaviour of right outer group join and full outer group join is currently undefined";
+note "The behaviour of right outer group join and full outer group join is currently undefined.";
+note "For now, they result in exceptions.";
+
+{
+	my $e = exception {
+		people->group_join( pets, -right, sub { $_ }, sub { $_->owner }, $smush );
+	};
+	
+	isa_ok( $e, 'LINQ::Exception::CallerError', '$e' );
+}
+
+{
+	my $e = exception {
+		people->group_join( pets, -outer, sub { $_ }, sub { $_->owner }, $smush );
+	};
+	
+	isa_ok( $e, 'LINQ::Exception::CallerError', '$e' );
+}
+
 	
 done_testing;

@@ -54,4 +54,11 @@ is_deeply(
 	'of_type plus coercions',
 );
 
+my $e = exception { $collection->of_type( [] )->to_array };
+is(
+	ref( $e ),
+	'LINQ::Exception::CallerError',
+	'Non-valid type constraint is a caller error',
+);
+
 done_testing;
