@@ -190,14 +190,29 @@ sub take_while {
 	my $self    = shift;
 	my $filter  = LINQ::Util::Internal::assert_code( @_ );
 	my $stopped = 0;
-	$self->where(
-		sub {
-			$stopped = 1
-				if !$stopped
-				&& !$filter->( $_ );
-			not $stopped;
+	my $idx     = 0;
+	
+	require LINQ;
+	require LINQ::Iterator;
+	'LINQ::Iterator'->new( sub {
+		return LINQ::END() if $stopped;
+		local ( $@, $_ );
+		my $next;
+		my $ok = eval { $next = $self->element_at( $idx ); 1 };
+		my $e  = $@;
+		if ( $ok and $filter->( $_ = $next ) ) {
+			++$idx;
+			return $next;
 		}
-	);
+		if ( defined $e and not $ok ) {
+			require Scalar::Util;
+			die( $e ) unless Scalar::Util::blessed( $e );
+			die( $e ) unless $e->isa( 'LINQ::Exception::NotFound' );
+		}
+		
+		$stopped = 1;
+		return LINQ::END();
+	} );
 } #/ sub take_while
 
 sub skip {
@@ -221,9 +236,33 @@ sub skip_while {
 } #/ sub skip_while
 
 sub concat {
-	my $self  = shift;
-	my $other = $_[0];
-	return LINQ::Util::Internal::create_linq( $self, [ $self->to_list, $other->to_list ] );
+	my @collections = @_;
+	my $idx = 0;
+	
+	require LINQ;
+	require LINQ::Iterator;
+	'LINQ::Iterator'->new( sub {
+		local ( $@, $_ );
+		my $next;
+		FIND_NEXT: {
+			return LINQ::END() if not @collections;
+			
+			my $ok = eval { $next = $collections[0]->element_at( $idx ); 1 };
+			my $e  = $@;
+			if ( $ok ) {
+				++$idx;
+				return $next;
+			}
+			elsif ( defined $e and not $ok ) {
+				require Scalar::Util;
+				die( $e ) unless Scalar::Util::blessed( $e );
+				die( $e ) unless $e->isa( 'LINQ::Exception::NotFound' );
+			}
+			shift @collections;
+			$idx = 0;
+			redo FIND_NEXT;
+		};
+	} );
 }
 
 sub order_by {
