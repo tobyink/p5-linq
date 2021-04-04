@@ -201,4 +201,22 @@ sub where {
 	$self->LINQ::Collection::where( @_ );
 }
 
+sub to_iterator {
+	my $self = shift;
+	
+	if ( my $guts = $self->_guts ) {
+		my $idx  = 0;
+		my $done = 0;
+		return sub {
+			return if $done;
+			my $val = $guts->fetch_ref( $idx++ );
+			return $$val if $val;
+			++$done;
+			return;
+		};
+	}
+	
+	$self->LINQ::Collection::to_iterator( @_ );
+}
+
 1;

@@ -24,4 +24,5 @@
 		item "Improved test coverage."^^Tests;
 		item "Document the functions provided in LINQ.pm."^^Documentation;
 		item "Make `concat` work on potentially infinite collections."^^Change;
+		item "Make `to_iterator` work on potentially infinite collections."^^Change;
 	].
