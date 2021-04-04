@@ -17,3 +17,11 @@
 		item "Make the callable parameter to `order_by` and `order_by_descending` optional."^^Change;
 		item "Document the LINQ::Collection interface."^^Documentation;
 	].
+
+`LINQ 0.000_003 cpan:TOBYINK`
+	issued  2021-04-04;
+	changeset [
+		item "Improved test coverage."^^Tests;
+		item "Document the functions provided in LINQ.pm."^^Documentation;
+		item "Make `concat` work on potentially infinite collections."^^Change;
+	].
