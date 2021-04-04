@@ -201,4 +201,26 @@ sub where {
 	$self->LINQ::Collection::where( @_ );
 }
 
+sub take_while {
+	my $self = shift;
+	my $guts = $self->_guts;
+	my $check = LINQ::Util::Internal::assert_code( @_ );
+	
+	my @taken;
+	my $idx = 0;
+	local $_;
+	TAKING: while ( 1 ) {
+		my $next = $guts->fetch_ref( $idx );
+		if ( $next and $check->( $_ = $$next ) ) {
+			push @taken, $$next;
+			++$idx;
+		}
+		else {
+			last TAKING;
+		}
+	}
+	
+	return LINQ::Util::Internal::create_linq( $self => \@taken );
+}
+
 1;

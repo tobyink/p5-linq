@@ -39,4 +39,20 @@ is_deeply(
 	'Range(-1, 7)',
 );
 
+my $c3 = Range( undef, 7 );
+
+is_deeply(
+	$c3->to_array,
+	[ 0, 1 .. 7 ],
+	'Range(undef, 7)',
+);
+
+my $c4 = Range( 7, undef );
+
+is_deeply(
+	$c4->take(4)->to_array,
+	[ 7 .. 10 ],
+	'Range(7, undef)',
+);
+
 done_testing;

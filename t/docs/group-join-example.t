@@ -1,5 +1,3 @@
-use strict;
-use warnings;
 use LINQ 'LINQ';
 use Test::Modern;
 

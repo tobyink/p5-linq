@@ -44,4 +44,22 @@ is_deeply(
 
 is( LINQ( $c1 ), $c1, 'LINQ(Collection)' );
 
+my $e1 = exception {
+	my $r = LINQ( {} );
+};
+
+ok(
+	$e1 && $e1->isa( 'LINQ::Exception::CallerError' ),
+	'LINQ({}) is a caller error.'
+);
+
+my $e2 = exception {
+	my $r = LINQ( bless( {}, 'Dummy::Class' ) );
+};
+
+ok(
+	$e2 && $e2->isa( 'LINQ::Exception::CallerError' ),
+	'LINQ($random_object) is a caller error.'
+);
+
 done_testing;

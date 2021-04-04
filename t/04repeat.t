@@ -31,4 +31,12 @@ is_deeply(
 	'Repeat("Foo", 7)',
 );
 
+my $c2 = Repeat( "Foo" );
+
+is_deeply(
+	$c2->take(8)->to_array,
+	[ ( "Foo" ) x 8 ],
+	'Repeat("Foo")',
+);
+
 done_testing;

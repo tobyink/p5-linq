@@ -6,8 +6,8 @@ Optimization:
 - LINQ::Iterator->where
 - LINQ::Iterator->select_many
 - LINQ::Iterator->first
+- LINQ::Iterator->concatenate
 - LINQ::Iterator->zip
-- LINQ::Iterator->take_while
 - LINQ::Iterator->take
 - LINQ::Collection->any
 
