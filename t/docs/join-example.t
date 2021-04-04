@@ -23,7 +23,7 @@ my $BY_HASH_KEY = sub {
 my $joined = $people->join(
 	$departments,
 	-inner,                        # inner join
-	[ $BY_HASH_KEY, 'dept' ],      # select from $people by hash key 
+	[ $BY_HASH_KEY, 'dept' ],      # select from $people by hash key
 	[ $BY_HASH_KEY, 'dept_name' ], # select from $departments by hash key
 	sub {
 		my ( $person, $dept ) = @_;
