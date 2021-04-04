@@ -229,7 +229,20 @@ sub concat {
 sub order_by {
 	my $self   = shift;
 	my $hint   = ref( $_[0] ) ? -numeric : shift( @_ );
-	my $keygen = LINQ::Util::Internal::assert_code( @_ );
+	my $keygen = @_ ? LINQ::Util::Internal::assert_code( @_ ) : undef;
+	
+	if ( not $keygen ) {
+		if ( $hint eq -string ) {
+			return LINQ::Util::Internal::create_linq(
+				$self => [ sort { $a cmp $b } $self->to_list ]
+			);
+		}
+		elsif ( $hint eq -numeric ) {
+			return LINQ::Util::Internal::create_linq(
+				$self => [ sort { $a <=> $b } $self->to_list ]
+			);
+		}
+	}
 	
 	if ( $hint eq -string ) {
 		return LINQ::Util::Internal::create_linq(
@@ -612,7 +625,7 @@ C<< LINQ::Range() >> functions all provide the LINQ::Collection interface.
 Many of the methods in this interface also return new objects which provide
 this interface.
 
-=head1 METHOD
+=head1 METHODS
 
 Many methods take a parameter "CALLABLE". This means they can accept a
 coderef, an object overloading C<< &{} >>, or an arrayref where the first
@@ -775,8 +788,8 @@ This is akin to an SQL join.
   my $joined = $people->join(
     $departments,
     -inner,                        # inner join
-    [ $BY_HASH_KEY, 'dept' ],      # select from $people by hash key 
-    [ $BY_HASH_KEY, 'dept_name' ], # select from $departments by hash key
+    [ $BY_HASH_KEY, 'dept' ],      # select from $people 
+    [ $BY_HASH_KEY, 'dept_name' ], # select from $departments
     sub {
       my ( $person, $dept ) = @_;
       return {
@@ -827,14 +840,15 @@ This is best explained with a full example:
   my $joined = $departments->group_join(
     $people,
     -left,                         # left join
-    [ $BY_HASH_KEY, 'dept_name' ], # select from $departments by hash key
-    [ $BY_HASH_KEY, 'dept' ],      # select from $people by hash key 
+    [ $BY_HASH_KEY, 'dept_name' ], # select from $departments
+    [ $BY_HASH_KEY, 'dept' ],      # select from $people 
     sub {
       my ( $dept, $people ) = @_;  # $people is a LINQ::Collection 
+      my $names = $people->select( $BY_HASH_KEY, 'name' )->to_array;
       return {
         dept      => $dept->{dept_name},
         cost_code => $dept->{cost_code},
-        people    => $people->select( $BY_HASH_KEY, 'name' )->to_array,
+        people    => $names,
       };
     },
   );
@@ -872,11 +886,13 @@ returns false.
 
 =item C<< skip( N ) >>
 
-Documentation not written yet.
+Skips the first N items from a collection, and returns the rest as a new
+collection.
 
 =item C<< skip_while( CALLABLE ) >>
 
-Documentation not written yet.
+Skips the first items from a collection while CALLABLE returns true, and
+returns the rest as a new collection.
 
 =item C<< concat( COLLECTION ) >>
 
@@ -885,9 +901,16 @@ collection.
 
   my $deck_of_cards = $red_cards->concat( $black_cards );
 
-=item C<< order_by( HINT?, CALLABLE ) >>
+=item C<< order_by( HINT?, CALLABLE? ) >>
 
-Documentation not written yet.
+HINT may be C<< -numeric >> (the default) or C<< -string >>.
+
+If CALLABLE is given, it should return a number or string to sort by.
+
+  my $sorted = $people->order_by(
+    -string,
+    [ $BY_HASH_KEY, 'name' ]   # CALLABLE as an arrayref
+  );
 
 =item C<< then_by( HINT?, CALLABLE ) >>
 
@@ -895,7 +918,7 @@ Not implemented.
 
 =item C<< order_by_descending( HINT?, CALLABLE ) >>
 
-Documentation not written yet.
+Like C<order_by> but uses reverse order.
 
 =item C<< then_by_descending( HINT?, CALLABLE ) >>
 
@@ -907,27 +930,79 @@ Reverses the order of the collection.
 
 =item C<< group_by( CALLABLE ) >>
 
-Documentation not written yet.
+Groups the items by the key returned by CALLABLE.
+
+The collection of groups is a LINQ::Collection and each grouping is a
+LINQ::Grouping. LINQ::Grouping provides two accessors: C<key> and C<values>,
+with C<values> returning a LINQ::Collection of items.
+
+  my $people = LINQ( [
+    { name => "Alice", dept => 'Marketing' },
+    { name => "Bob",   dept => 'IT' },
+    { name => "Carol", dept => 'IT' },
+  ] );
+  
+  my $groups = $people->group_by( sub { $_->{dept} } );
+  
+  for my $group ( $groups->to_list ) {
+    print "Dept: ", $group->key, "\n";
+    
+    for my $person ( $group->values->to_list ) {
+      print " - ", $person->{name};
+    }
+  }
 
 =item C<< distinct( CALLABLE? ) >>
 
-Documentation not written yet.
+Returns a new collection without any duplicates which were in the original.
+
+If CALLABLE is provided, this will be used to determine when two items are
+considered identical/equivalent. Otherwise, numeric equality is used. 
 
 =item C<< union( COLLECTION, CALLABLE? ) >>
 
-Documentation not written yet.
+Returns a new collection formed from the union of both collections.
+
+  my $first  = LINQ( [ 1, 2, 3, 4 ] );
+  my $second = LINQ( [ 3, 4, 5, 6 ] );
+  
+  $first->union( $second )->to_array;  # ==> [ 1, 2, 3, 4, 5, 6 ]
+
+If CALLABLE is provided, this will be used to determine when two items are
+considered identical/equivalent. Otherwise, numeric equality is used. 
 
 =item C<< intersect( COLLECTION, CALLABLE? ) >>
 
-Documentation not written yet.
+Returns a new collection formed from the union of both collections.
+
+  my $first  = LINQ( [ 1, 2, 3, 4 ] );
+  my $second = LINQ( [ 3, 4, 5, 6 ] );
+  
+  $first->intersect( $second )->to_array;  # ==> [ 3, 4 ]
+
+If CALLABLE is provided, this will be used to determine when two items are
+considered identical/equivalent. Otherwise, numeric equality is used. 
 
 =item C<< except( COLLECTION, CALLABLE? ) >>
 
-Documentation not written yet.
+Returns a new collection formed from the asymmetric difference of both
+collections.
+
+  my $first  = LINQ( [ 1, 2, 3, 4 ] );
+  my $second = LINQ( [ 3, 4, 5, 6 ] );
+  
+  $first->except( $second )->to_array;  # ==> [ 1, 2 ]
+
+If CALLABLE is provided, this will be used to determine when two items are
+considered identical/equivalent. Otherwise, numeric equality is used. 
 
 =item C<< sequence_equal( COLLECTION, CALLABLE? ) >>
 
-Documentation not written yet.
+Returns true if and only if each item in the first collection is
+identical/equivalent to its corresponding item in the second collection,
+considered in order, according to CALLABLE.
+
+If CALLABLE isn't given, then numeric equality is used.
 
 =item C<< first( CALLABLE? ) >>
 
@@ -1082,7 +1157,7 @@ item, given as a parameter.
   my $collection = $people->default_if_empty( "Bob" );
   
   # Equivalent to:
-  my $collection = ( $people->count == 0 ) ? LINQ( [ "Bob" ] ) : $people;
+  my $collection = $people->count ? $people : LINQ( [ "Bob" ] );
 
 =item C<< target_class >>
 
@@ -1105,6 +1180,8 @@ Please report any bugs to
 L<http://rt.cpan.org/Dist/Display.html?Queue=LINQ>.
 
 =head1 SEE ALSO
+
+L<LINQ>, L<LINQ::Grouping>.
 
 L<https://en.wikipedia.org/wiki/Language_Integrated_Query>
 

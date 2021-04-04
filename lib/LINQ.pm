@@ -130,6 +130,8 @@ L<http://rt.cpan.org/Dist/Display.html?Queue=LINQ>.
 
 =head1 SEE ALSO
 
+L<LINQ::Collection>.
+
 L<https://en.wikipedia.org/wiki/Language_Integrated_Query>
 
 =head1 AUTHOR
