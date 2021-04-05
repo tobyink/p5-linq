@@ -10,7 +10,7 @@ our $VERSION   = '0.000_004';
 use Role::Tiny;
 use LINQ::Util::Internal ();
 
-requires qw( target_class to_list );
+requires qw( to_list );
 
 my $_coerce = sub {
 	my ( $thing ) = @_;
@@ -35,7 +35,7 @@ sub select {
 	my $self = shift;
 	my $map  = LINQ::Util::Internal::assert_code( @_ );
 	LINQ::Util::Internal::create_linq(
-		$self => [ map scalar( $map->( $_ ) ), $self->to_list ],
+		[ map scalar( $map->( $_ ) ), $self->to_list ],
 	);
 }
 
@@ -43,7 +43,7 @@ sub where {
 	my $self   = shift;
 	my $filter = LINQ::Util::Internal::assert_code( @_ );
 	LINQ::Util::Internal::create_linq(
-		$self => [ grep $filter->( $_ ), $self->to_list ],
+		[ grep $filter->( $_ ), $self->to_list ],
 	);
 }
 
@@ -51,7 +51,7 @@ sub select_many {
 	my $self = shift;
 	my $map  = LINQ::Util::Internal::assert_code( @_ );
 	LINQ::Util::Internal::create_linq(
-		$self => [ map $map->( $_ )->$_coerce->to_list, $self->to_list ],
+		[ map $map->( $_ )->$_coerce->to_list, $self->to_list ],
 	);
 }
 
@@ -152,7 +152,7 @@ sub join {
 		}
 	}
 	
-	LINQ::Util::Internal::create_linq( $_[0], \@joined );
+	LINQ::Util::Internal::create_linq( \@joined );
 } #/ sub join
 
 sub group_join {
@@ -172,12 +172,12 @@ sub group_join {
 		
 		if ( @group or $hint eq -left ) {
 			my $a = $X->[1];
-			my $b = LINQ::Util::Internal::create_linq( $_[0], \@group );
+			my $b = LINQ::Util::Internal::create_linq( \@group );
 			push @joined, scalar $joiner->( $a, $b );
 		}
 	} #/ for my $Xi ( 0 .. $#$x_mapped)
 	
-	LINQ::Util::Internal::create_linq( $_[0], \@joined );
+	LINQ::Util::Internal::create_linq( \@joined );
 } #/ sub group_join
 
 sub take {
@@ -271,19 +271,19 @@ sub order_by {
 	if ( not $keygen ) {
 		if ( $hint eq -string ) {
 			return LINQ::Util::Internal::create_linq(
-				$self => [ sort { $a cmp $b } $self->to_list ]
+				[ sort { $a cmp $b } $self->to_list ]
 			);
 		}
 		elsif ( $hint eq -numeric ) {
 			return LINQ::Util::Internal::create_linq(
-				$self => [ sort { $a <=> $b } $self->to_list ]
+				[ sort { $a <=> $b } $self->to_list ]
 			);
 		}
 	}
 	
 	if ( $hint eq -string ) {
 		return LINQ::Util::Internal::create_linq(
-			$self => [
+			[
 				map $_->[1],
 				sort { $a->[0] cmp $b->[0] }
 					map [ $keygen->( $_ ), $_ ],
@@ -294,7 +294,7 @@ sub order_by {
 	
 	elsif ( $hint eq -numeric ) {
 		return LINQ::Util::Internal::create_linq(
-			$self => [
+			[
 				map $_->[1],
 				sort { $a->[0] <=> $b->[0] }
 					map [ $keygen->( $_ ), $_ ],
@@ -325,7 +325,7 @@ sub then_by_descending {
 sub reverse {
 	my $self = shift;
 	LINQ::Util::Internal::create_linq(
-		$self => [ reverse( $self->to_list ) ],
+		[ reverse( $self->to_list ) ],
 	);
 }
 
@@ -347,10 +347,10 @@ sub group_by {
 	
 	require LINQ::Grouping;
 	LINQ::Util::Internal::create_linq(
-		$self => [
+		[
 			map 'LINQ::Grouping'->new(
 				key    => $_,
-				values => LINQ::Util::Internal::create_linq( $self, $values{$_} ),
+				values => LINQ::Util::Internal::create_linq( $values{$_} ),
 			),
 			@keys
 		]
@@ -611,7 +611,7 @@ sub zip {
 		push @results, scalar $map->( shift( @self ), shift( @other ) );
 	}
 	
-	LINQ::Util::Internal::create_linq( $self => \@results );
+	LINQ::Util::Internal::create_linq( \@results );
 } #/ sub zip
 
 sub default_if_empty {
@@ -619,7 +619,7 @@ sub default_if_empty {
 	my $item = shift;
 	
 	if ( $self->count == 0 ) {
-		return LINQ::Util::Internal::create_linq( $self => [$item] );
+		return LINQ::Util::Internal::create_linq( [ $item ] );
 	}
 	
 	return $self;
@@ -1242,19 +1242,6 @@ You can break out of the loop using C<< LINQ::LAST >>.
 
 Microsoft's official LINQ API doesn't include a C<ForEach> method, but this
 method is provided by the MoreLINQ extension.
-
-=item C<< target_class >>
-
-This returns either a class name or a coderef, which will be the usual way
-that the methods defined in LINQ::Collection will create new collections
-(for example, when they need to return a collection).
-
-Given a collection, you can create a new collection like this:
-
-  my $target_class   = $old_collection->target_class;
-  my $new_collection = ref($target_class)
-    ? $target_class->( @items )
-    : $target_class->new( @items );
 
 =back
 

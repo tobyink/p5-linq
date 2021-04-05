@@ -32,8 +32,4 @@ sub to_list {
 	@$self;
 }
 
-sub target_class {
-	__PACKAGE__;
-}
-
 1;

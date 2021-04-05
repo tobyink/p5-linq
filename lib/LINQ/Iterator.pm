@@ -124,11 +124,6 @@ sub _guts {
 	tied( @$self );
 }
 
-sub target_class {
-	require LINQ::Array;
-	"LINQ::Array";
-}
-
 sub to_list {
 	my $self = shift;
 	my @list = @$self;
@@ -164,7 +159,7 @@ sub select {
 	if ( my $guts = $self->_guts ) {
 		my $map = LINQ::Util::Internal::assert_code( @_ );
 		my $idx = 0;
-		return __PACKAGE__->new( sub {
+		return LINQ::Util::Internal::create_linq( sub {
 			my $val = $guts->fetch_ref( $idx++ );
 			if ( ! $val ) {
 				require LINQ;
@@ -184,7 +179,7 @@ sub where {
 	if ( my $guts = $self->_guts ) {
 		my $check = LINQ::Util::Internal::assert_code( @_ );
 		my $idx   = 0;
-		return __PACKAGE__->new( sub {
+		return LINQ::Util::Internal::create_linq( sub {
 			GETVAL: {
 				my $val = $guts->fetch_ref( $idx++ );
 				if ( ! $val ) {

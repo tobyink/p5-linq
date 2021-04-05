@@ -8,9 +8,8 @@ our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.000_004';
 
 sub create_linq {
-	my $parent = shift;
-	my $class  = $parent->target_class;
-	ref( $class ) ? $class->( @_ ) : $class->new( @_ );
+	require LINQ;
+	return LINQ::LINQ( pop );
 }
 
 sub throw {
