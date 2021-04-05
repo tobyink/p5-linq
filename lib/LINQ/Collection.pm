@@ -348,7 +348,7 @@ sub group_by {
 	require LINQ::Grouping;
 	LINQ::Util::Internal::create_linq(
 		$self => [
-			map LINQ::Grouping::->new(
+			map 'LINQ::Grouping'->new(
 				key    => $_,
 				values => LINQ::Util::Internal::create_linq( $self, $values{$_} ),
 			),

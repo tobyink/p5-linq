@@ -3,11 +3,13 @@ Classes:
 - LINQ::LibXML
 
 Optimization:
-- LINQ::Iterator->where
-- LINQ::Iterator->select_many
-- LINQ::Iterator->first
-- LINQ::Iterator->zip
-- LINQ::Collection->any
+- select_many: avoid to_list
+- skip/skip_while: create an iterator
+- sequence_equal: avoid to_list
+- any: short-circuit true, avoid to_list
+- all: short-circuit false, avoid to_list
+- contains: short-circuit true, avoid to_list
+- zip: avoid to_list
 
 Features:
 - LINQ::Collection->to_array ought to return a tied array pointing back to the collection
