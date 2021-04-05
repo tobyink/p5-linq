@@ -10,9 +10,9 @@ our $VERSION   = '0.000_004';
 use Exporter::Shiny qw( LINQ Range Repeat END );
 
 our $FORCE_ITERATOR;
+our $IN_LOOP;
 
 my $end = do {
-
 	package LINQ::END;
 	our $AUTHORITY = 'cpan:TOBYINK';
 	our $VERSION   = '0.000_004';
@@ -22,8 +22,28 @@ my $end = do {
 	\$x;
 };
 
+my $last = do {
+	package LINQ::LAST;
+	our $AUTHORITY = 'cpan:TOBYINK';
+	our $VERSION   = '0.000_004';
+	my $x = 666;
+	bless( \$x );
+	&Internals::SvREADONLY( \$x, !!1 );
+	\$x;
+};
+
 BEGIN {
 	*LINQ::END = sub () { $end };
+	
+	*LINQ::LAST = sub () {
+		if ( $IN_LOOP ) {
+			die( $last );
+		}
+		require LINQ::Exception;
+		'LINQ::Exception::CallerError'->throw(
+			message => "Cannot call LINQ::LAST outside foreach",
+		);
+	};
 }
 
 sub LINQ ($) {
@@ -154,8 +174,13 @@ C<Repeat> may be exported, but is not exported by default.
 
 Returns the special value C<< LINQ::END() >>.
 
-C<Repeat> may be exported, but is not exported by default, and I recommend
+C<END> may be exported, but is not exported by default, and I recommend
 calling it by its fully qualified name for clarity. 
+
+=item C<< LAST() >>
+
+Used by the C<foreach> method of L<LINQ::Collection>. If called otherwise,
+will die.
 
 =back
 

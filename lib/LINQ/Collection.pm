@@ -625,6 +625,25 @@ sub default_if_empty {
 	return $self;
 } #/ sub default_if_empty
 
+sub foreach {
+	my $self = shift;
+	my $code = LINQ::Util::Internal::assert_code( @_ );
+	
+	local $@;
+	my $ok = eval {
+		local $LINQ::IN_LOOP = 1;
+		$self->where( sub { $code->( $_ ); 0 } )->to_list;
+		1;
+	};
+	if ( not $ok ) {
+		my $e = $@;
+		require Scalar::Util;
+		die( $e ) unless Scalar::Util::blessed( $e );
+		die( $e ) unless $e->isa( 'LINQ::LAST' );
+	}
+	return;
+}
+
 1;
 
 __END__
@@ -1196,6 +1215,33 @@ item, given as a parameter.
   
   # Equivalent to:
   my $collection = $people->count ? $people : LINQ( [ "Bob" ] );
+
+=item C<< foreach( CALLABLE ) >>
+
+This calls CALLABLE on each item in the collection. The following are roughly
+equivalent:
+
+  for ( $collection->to_list ) {
+    say $_;
+  }
+  
+  $collection->foreach( sub {
+    say $_;
+  } );
+
+The advantage of the latter is that it avoids calling C<to_list>, which would
+obviously fail on infinite collections.
+
+You can break out of the loop using C<< LINQ::LAST >>.
+
+  my $counter = 0;
+  $collection->foreach( sub {
+    say $_;
+    LINQ::LAST if ++$counter >= 10;
+  } );
+
+Microsoft's official LINQ API doesn't include a C<ForEach> method, but this
+method is provided by the MoreLINQ extension.
 
 =item C<< target_class >>
 

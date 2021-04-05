@@ -31,7 +31,7 @@ if ( $] < 5.010000 ) {
 		my $class = shift;
 		
 		my ( $level, %caller ) = 0;
-		$level++ until caller( $level ) !~ /\ALINQx?::/;
+		$level++ until caller( $level ) !~ /\ALINQx?(::|\z)/;
 		@caller{qw/ package file line /} = caller( $level );
 		
 		die( $class->new( %caller, @_ ) );
