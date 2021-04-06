@@ -9,7 +9,7 @@ our $VERSION   = '0.000_004';
 
 sub create_linq {
 	require LINQ;
-	return LINQ::LINQ( pop );
+	goto \&LINQ::LINQ;
 }
 
 sub throw {
