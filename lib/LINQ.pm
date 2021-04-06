@@ -5,7 +5,7 @@ use warnings;
 package LINQ;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_004';
+our $VERSION   = '0.000_005';
 
 use Exporter::Shiny qw( LINQ Range Repeat END );
 
@@ -15,7 +15,7 @@ our $IN_LOOP;
 my $end = do {
 	package LINQ::END;
 	our $AUTHORITY = 'cpan:TOBYINK';
-	our $VERSION   = '0.000_004';
+	our $VERSION   = '0.000_005';
 	my $x = 42;
 	bless( \$x );
 	&Internals::SvREADONLY( \$x, !!1 );
@@ -25,7 +25,7 @@ my $end = do {
 my $last = do {
 	package LINQ::LAST;
 	our $AUTHORITY = 'cpan:TOBYINK';
-	our $VERSION   = '0.000_004';
+	our $VERSION   = '0.000_005';
 	my $x = 666;
 	bless( \$x );
 	&Internals::SvREADONLY( \$x, !!1 );

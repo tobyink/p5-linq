@@ -26,3 +26,11 @@
 		item "Make `concat` work on potentially infinite collections."^^Change;
 		item "Make `to_iterator` work on potentially infinite collections."^^Change;
 	].
+
+`LINQ 0.000_005 cpan:TOBYINK`
+	issued  2021-04-04;
+	changeset [
+		item "Document LINQ::Exception."^^Documentation;
+		item "`foreach` method"^^Addition;
+		item "`target_class` method"^^Removal;
+	].
