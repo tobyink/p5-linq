@@ -135,3 +135,116 @@ if ( $] < 5.010000 ) {
 }
 
 1;
+
+=pod
+
+=encoding utf-8
+
+=head1 NAME
+
+LINQ::Exception - exceptions thrown by LINQ
+
+=head1 DESCRIPTION
+
+When LINQ encounters an error, it doesn't just C<die> with a string, but throws
+an exception object which can be caught with C<eval>, L<Try::Tiny>, or
+L<Syntax::Keyword::Try>.
+
+These objects overload stringification, so if they are not caught and dealt
+with, you'll get a sensible error message printed.
+
+=head1 EXCEPTION TYPES
+
+=head2 LINQ::Exception
+
+This is the base class for all LINQ exceptions.
+
+  use LINQ qw( LINQ );
+  use Syntax::Keyword::Try qw( try :experimental );
+  
+  try {
+    my $collection = LINQ [ 1, 2, 3 ];
+    my $item       = $collection->element_at( 10 );
+  }
+  catch ( $e isa LINQ::Exception ) {
+    printf(
+      "Got error: %s at %s (%s line %d)\n",
+      $e->message,
+      $e->package,
+      $e->file,
+      $e->line,
+    );
+  }
+
+The class provides C<message>, C<package>, C<file>, and C<line> methods to
+get details of the error, as well as a C<to_string> method which provides the
+message, package, file, and line as one combined string.
+
+There is a class method C<throw> which instantiates a new object and dies.
+
+  'LINQ::Exception'->throw;
+
+LINQ::Exception is never directly thrown by LINQ, but subclasses of it are.
+
+=head2 LINQ::Exception::Unimplemented
+
+A subclass of LINQ::Exception thrown when you call a method or feature which
+is not implemented for the collection you call it on.
+
+=head2 LINQ::Exception::InternalError
+
+A subclass of LINQ::Exception thrown when an internal error is encountered in
+LINQ, not caused by the caller.
+
+=head2 LINQ::Exception::CallerError
+
+A subclass of LINQ::Exception thrown when the caller of a method has called it
+incorrectly. For example, if a method is called which expects a coderef as a
+parameter, but is given a string.
+
+=head2 LINQ::Exception::CollectionError
+
+A subclass of LINQ::Exception thrown when a method you've called cannot be
+fulfilled by the collection you've called it on. For example, you've asked to
+fetch the third item in a collection containing only two items.
+
+=head2 LINQ::Exception::NotFound
+
+A subclass of LINQ::Exception::CollectionError thrown when trying to access an
+item in a collection which cannot be found.
+
+=head2 LINQ::Exception::MultipleFound
+
+A subclass of LINQ::Exception::CollectionError thrown when trying to access a
+single item in a collection when multiple items are found.
+
+=head2 LINQ::Exception::Cast
+
+A subclass of LINQ::Exception::CollectionError thrown when trying to cast all
+items in a collection to a type, but this fails for one or more items.
+
+=head1 BUGS
+
+Please report any bugs to
+L<http://rt.cpan.org/Dist/Display.html?Queue=LINQ>.
+
+=head1 SEE ALSO
+
+L<LINQ>.
+
+=head1 AUTHOR
+
+Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
+
+=head1 COPYRIGHT AND LICENCE
+
+This software is copyright (c) 2014, 2021 by Toby Inkster.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=head1 DISCLAIMER OF WARRANTIES
+
+THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
