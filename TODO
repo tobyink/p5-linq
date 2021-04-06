@@ -13,3 +13,16 @@ Optimization:
 
 Features:
 - LINQ::Collection->to_array ought to return a tied array pointing back to the collection
+- LINQ::Util::columns:
+
+	$data->select( columns(
+		'name',
+		'telephone', -as => 'phone',
+		sub { ... }, -as => 'address',
+	) );
+
+	$data->where( column_assertions(
+		'name',    -is => 'Bob',
+		'age',     -is => 30, -cmp => '>=',
+		'country', -in => [ 'UK', 'USA', 'France' ],
+	) );
