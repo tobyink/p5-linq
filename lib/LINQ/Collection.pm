@@ -207,6 +207,7 @@ sub take_while {
 			require Scalar::Util;
 			die( $e ) unless Scalar::Util::blessed( $e );
 			die( $e ) unless $e->isa( 'LINQ::Exception::NotFound' );
+			die( $e ) unless $e->collection == $self;
 		}
 		$stopped = 1;
 		return LINQ::END();
@@ -255,6 +256,7 @@ sub concat {
 				require Scalar::Util;
 				die( $e ) unless Scalar::Util::blessed( $e );
 				die( $e ) unless $e->isa( 'LINQ::Exception::NotFound' );
+				die( $e ) unless $e->collection == $collections[0];
 			}
 			shift @collections;
 			$idx = 0;
