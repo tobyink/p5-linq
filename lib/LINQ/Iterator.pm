@@ -116,7 +116,10 @@ sub new {
 		tie my ( @arr ), 'LINQ::Iterator::_LazyList', LINQ::Util::Internal::assert_code( @_ );
 		return bless \@arr, $class;
 	}
-	die "Expected to be given a CODE ref!";
+	LINQ::Util::Internal::throw(
+		"CallerError",
+		message => "Expected a coderef"
+	);
 }
 
 sub _guts {
