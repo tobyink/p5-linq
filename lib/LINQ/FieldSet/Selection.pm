@@ -54,4 +54,33 @@ sub _build_coderef {
 	};
 }
 
+sub _sql_selection {
+	my ( $self, $name_quoter ) = ( shift, @_ );
+	$name_quoter ||= sub {
+		my $name = shift;
+		return sprintf( '"%s"', quotemeta($name) );
+	};
+	return if $self->seen_asterisk;
+	
+	my @cols;
+	for my $field ( @{ $self->fields } ) {
+		my $orig_name = $field->value;
+		my $aliased   = $field->name;
+		return if ref( $orig_name );
+		return if ! defined( $aliased );
+		
+		if ( $aliased eq $orig_name ) {
+			push @cols, $name_quoter->( $orig_name );
+		}
+		else {
+			push @cols, sprintf(
+				'%s AS %s',
+				$name_quoter->( $orig_name ),
+				$name_quoter->( $aliased ),
+			);
+		}
+	}
+	return join( q[, ], @cols );
+}
+
 1;
