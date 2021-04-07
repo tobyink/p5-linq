@@ -207,7 +207,7 @@ sub take_while {
 sub skip {
 	my $self = shift;
 	my ( $n ) = @_;
-	$self->where( sub { $n-- <= 0 } );
+	$self->skip_while( sub { $n-- > 0 } );
 }
 
 sub skip_while {
