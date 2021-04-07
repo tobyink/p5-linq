@@ -3,7 +3,7 @@
 @prefix : <http://ontologi.es/doap-deps#>.
 
 `LINQ`
-	:runtime-requirement    [ :on "perl 5.006"^^:CpanId ];
+	:runtime-requirement    [ :on "perl 5.008003"^^:CpanId ];
 	:runtime-requirement    [ :on "Class::Tiny 0.005"^^:CpanId ];
 	:runtime-requirement    [ :on "Exporter::Shiny"^^:CpanId ];
 	:runtime-requirement    [ :on "List::Util 1.35"^^:CpanId ];
