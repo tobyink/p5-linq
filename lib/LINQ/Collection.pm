@@ -605,15 +605,17 @@ sub zip {
 	my $other = shift;
 	my $map   = LINQ::Util::Internal::assert_code( @_ );
 	
-	my @self  = $self->to_list;
-	my @other = $other->to_list;
+	my $iter1 = $self->to_iterator;
+	my $iter2 = $other->to_iterator;
 	my @results;
 	
-	while ( @self and @other ) {
-		push @results, scalar $map->( shift( @self ), shift( @other ) );
-	}
-	
-	LINQ::Util::Internal::create_linq( \@results );
+	require LINQ;
+	LINQ::Util::Internal::create_linq( sub {
+		my @r1 = $iter1->();
+		my @r2 = $iter2->();
+		return LINQ::END unless @r1 && @r2;
+		$map->( $r1[0], $r2[0] );
+	} );
 } #/ sub zip
 
 sub default_if_empty {
