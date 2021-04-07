@@ -139,6 +139,11 @@ of LINQ's usage.
 The C<LINQ>, C<Range>, and C<Repeat> functions return LINQ collections,
 objects implementing the L<LINQ::Collection> interface.
 
+The C<< LINQ::END() >> and C<< LINQ::LAST() >> functions are used as
+signals to control LINQ's iterators and loops.
+
+Additional utility functions can be found in L<LINQ::Util>.
+
 =over
 
 =item C<< LINQ( SOURCE ) >>
@@ -200,7 +205,7 @@ L<http://rt.cpan.org/Dist/Display.html?Queue=LINQ>.
 
 =head1 SEE ALSO
 
-L<LINQ::Collection>.
+L<LINQ::Collection>, L<LINQ::Util>, L<LINQ::Exception>.
 
 L<https://en.wikipedia.org/wiki/Language_Integrated_Query>
 
