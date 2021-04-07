@@ -943,6 +943,9 @@ Takes just the first N items from a collection, returning a new collection.
 Takes items from the collection, stopping at the first item where CALLABLE
 returns false.
 
+If CALLABLE dies, there are some issues on older versions of Perl with the
+error message getting lost.
+
 =item C<< skip( N ) >>
 
 Skips the first N items from a collection, and returns the rest as a new

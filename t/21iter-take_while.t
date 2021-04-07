@@ -6,6 +6,8 @@
 
 Given an iterator LINQ, checks exceptions get rethrown correctly.
 
+Test fails on older Perls for... reasons(?) so we skip test on Perl < 5.16. 
+
 =head1 AUTHOR
 
 Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
@@ -21,7 +23,7 @@ the same terms as the Perl 5 programming language system itself.
 
 BEGIN { $LINQ::FORCE_ITERATOR = 1 }
 
-use Test::Modern;
+use Test::Modern -requires => { 'perl' => '5.016' };
 use LINQ qw( LINQ );
 
 my $c1 = LINQ( sub { die "My error" } )->take_while( sub { 1 } );

@@ -90,10 +90,11 @@ if ( $] < 5.010000 ) {
 				and ( $self->[__EXHAUSTED] = !!1 )
 				and pop( @$cache )
 				and (
-				@got
-				? $self->$_throw_caller_error( 'Returned values after LINQ::END' )
-				: return ()
-				) while @got;
+					@got
+						? $self->$_throw_caller_error( 'Returned values after LINQ::END' )
+						: return ()
+				)
+				while @got;
 				
 			redo EXTEND;
 		} #/ EXTEND:
