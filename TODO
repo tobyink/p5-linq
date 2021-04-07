@@ -4,7 +4,6 @@ Classes:
 
 Optimization:
 - select_many: avoid to_list
-- skip/skip_while: create an iterator
 - sequence_equal: avoid to_list
 - any: short-circuit true, avoid to_list
 - all: short-circuit false, avoid to_list
