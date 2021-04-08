@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -28,10 +29,12 @@ my $output = '';
 
 my $collection = LINQ::Range( 1 );
 
-$collection->foreach( sub {
-	LINQ::LAST if $_ == 10;
-	$output .= $_;
-} );
+$collection->foreach(
+	sub {
+		LINQ::LAST if $_ == 10;
+		$output .= $_;
+	}
+);
 
 is( $output, '123456789' );
 

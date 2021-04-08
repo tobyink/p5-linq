@@ -39,17 +39,19 @@ sub select {
 	my $stopped;
 	
 	require LINQ;
-	LINQ::LINQ( sub {
-		return LINQ::END() if $stopped;
-		my @got = $iter->();
-		if ( @got ) {
-			local $_;
-			return scalar $map->( $_ = $got[0] );
+	LINQ::LINQ(
+		sub {
+			return LINQ::END() if $stopped;
+			my @got = $iter->();
+			if ( @got ) {
+				local $_;
+				return scalar $map->( $_ = $got[0] );
+			}
+			++$stopped;
+			return LINQ::END();
 		}
-		++$stopped;
-		return LINQ::END();
-	} );
-}
+	);
+} #/ sub select
 
 sub where {
 	my $self   = shift;
@@ -59,21 +61,23 @@ sub where {
 	my $stopped;
 	
 	require LINQ;
-	LINQ::LINQ( sub {
-		GETVAL: {
-			return LINQ::END() if $stopped;
-			my @got = $iter->();
-			if ( @got ) {
-				local $_;
-				my $pass = $filter->( $_ = $got[0] );
-				return $got[0] if $pass;
-				redo GETVAL;
-			}
-			++$stopped;
-			return LINQ::END();
-		};
-	} );
-}
+	LINQ::LINQ(
+		sub {
+			GETVAL: {
+				return LINQ::END() if $stopped;
+				my @got = $iter->();
+				if ( @got ) {
+					local $_;
+					my $pass = $filter->( $_ = $got[0] );
+					return $got[0] if $pass;
+					redo GETVAL;
+				}
+				++$stopped;
+				return LINQ::END();
+			} #/ GETVAL:
+		}
+	);
+} #/ sub where
 
 sub select_many {
 	my $self = shift;
@@ -84,29 +88,31 @@ sub select_many {
 	my $end;
 	
 	require LINQ;
-	LINQ::LINQ( sub {
-		BODY: {
-			return LINQ::END() if $end;
-			if ( not $inner ) {
-				$inner = $outer->();
-				if ( defined $inner ) {
-					local $_;
-					$inner = $map->( $_ = $inner )->$_coerce->to_iterator;
+	LINQ::LINQ(
+		sub {
+			BODY: {
+				return LINQ::END() if $end;
+				if ( not $inner ) {
+					$inner = $outer->();
+					if ( defined $inner ) {
+						local $_;
+						$inner = $map->( $_ = $inner )->$_coerce->to_iterator;
+					}
+					else {
+						$end = 1;
+						return LINQ::END();
+					}
+				} #/ if ( not $inner )
+				my @got = $inner->();
+				if ( not @got ) {
+					undef $inner;
+					redo BODY;
 				}
-				else {
-					$end = 1;
-					return LINQ::END();
-				}
-			}
-			my @got = $inner->();
-			if ( not @got ) {
-				undef $inner;
-				redo BODY;
-			}
-			return @got;
+				return @got;
+			} #/ BODY:
 		}
-	} );
-}
+	);
+} #/ sub select_many
 
 sub min {
 	my $self = shift;
@@ -151,16 +157,17 @@ my $_prepare_join = sub {
 	my $y_keys = LINQ::Util::Internal::assert_code( shift );
 	my $joiner = LINQ::Util::Internal::assert_code( @_ );
 	
-	$hint =~ /\A-(inner|left|right|outer)\z/ or LINQ::Util::Internal::throw(
+	$hint =~ /\A-(inner|left|right|outer)\z/
+		or LINQ::Util::Internal::throw(
 		"CallerError",
 		message => "Expected a recognized join type; got '$hint'"
-	);
-	
+		);
+		
 	my @x_mapped =
 		$x->select( sub { [ scalar( $x_keys->( $_[0] ) ), $_[0] ] } )->to_list;
 	my @y_mapped =
 		$y->select( sub { [ scalar( $y_keys->( $_[0] ) ), $_[0] ] } )->to_list;
-	
+		
 	return ( \@x_mapped, \@y_mapped, $hint, $joiner );
 };
 
@@ -246,15 +253,17 @@ sub take_while {
 	my $iter    = $self->to_iterator;
 	
 	require LINQ;
-	LINQ::LINQ( sub {
-		return LINQ::END() if $stopped;
-		my @got = $iter->();
-		if ( ! @got or ! $filter->( $_ = $got[0] ) ) {
-			$stopped++;
-			return LINQ::END();
+	LINQ::LINQ(
+		sub {
+			return LINQ::END() if $stopped;
+			my @got = $iter->();
+			if ( !@got or !$filter->( $_ = $got[0] ) ) {
+				$stopped++;
+				return LINQ::END();
+			}
+			return $got[0];
 		}
-		return $got[0];
-	} );
+	);
 } #/ sub take_while
 
 sub skip {
@@ -271,22 +280,24 @@ sub skip_while {
 	my $iter    = $self->to_iterator;
 	
 	require LINQ;
-	LINQ::LINQ( sub {
-		SKIPPING: {
-			return LINQ::END() if $stopped;
-			my @got = $iter->();
-			if ( ! @got ) {
-				$stopped++;
-				redo SKIPPING;
-			}
-			return $got[0] if $started;
-			if ( $filter->( $_ = $got[0] ) ) {
-				redo SKIPPING;
-			}
-			++$started;
-			return $got[0];
-		};
-	} );
+	LINQ::LINQ(
+		sub {
+			SKIPPING: {
+				return LINQ::END() if $stopped;
+				my @got = $iter->();
+				if ( !@got ) {
+					$stopped++;
+					redo SKIPPING;
+				}
+				return $got[0] if $started;
+				if ( $filter->( $_ = $got[0] ) ) {
+					redo SKIPPING;
+				}
+				++$started;
+				return $got[0];
+			} #/ SKIPPING:
+		}
+	);
 } #/ sub skip_while
 
 sub concat {
@@ -294,38 +305,38 @@ sub concat {
 	my $idx = 0;
 	
 	require LINQ;
-	LINQ::LINQ( sub {
-		FIND_NEXT: {
-			return LINQ::END() if not @collections;
-			
-			my @got = $collections[0]->();
-			if ( not @got ) {
-				shift @collections;
-				redo FIND_NEXT;
-			}
-			
-			return $got[0];
-		};
-	} );
-}
+	LINQ::LINQ(
+		sub {
+			FIND_NEXT: {
+				return LINQ::END() if not @collections;
+				
+				my @got = $collections[0]->();
+				if ( not @got ) {
+					shift @collections;
+					redo FIND_NEXT;
+				}
+				
+				return $got[0];
+			} #/ FIND_NEXT:
+		}
+	);
+} #/ sub concat
 
 sub order_by {
 	my $self   = shift;
 	my $hint   = ref( $_[0] ) ? -numeric : shift( @_ );
-	my $keygen = @_ ? LINQ::Util::Internal::assert_code( @_ ) : undef;
+	my $keygen = @_           ? LINQ::Util::Internal::assert_code( @_ ) : undef;
 	
 	if ( not $keygen ) {
 		if ( $hint eq -string ) {
 			return LINQ::Util::Internal::create_linq(
-				[ sort { $a cmp $b } $self->to_list ]
-			);
+				[ sort { $a cmp $b } $self->to_list ] );
 		}
 		elsif ( $hint eq -numeric ) {
 			return LINQ::Util::Internal::create_linq(
-				[ sort { $a <=> $b } $self->to_list ]
-			);
+				[ sort { $a <=> $b } $self->to_list ] );
 		}
-	}
+	} #/ if ( not $keygen )
 	
 	if ( $hint eq -string ) {
 		return LINQ::Util::Internal::create_linq(
@@ -404,9 +415,10 @@ sub group_by {
 } #/ sub group_by
 
 sub distinct {
-	my $self    = shift;
-	my $compare = @_ ? LINQ::Util::Internal::assert_code( @_ ) : sub { $_[0] == $_[1] };
-	
+	my $self = shift;
+	my $compare =
+		@_ ? LINQ::Util::Internal::assert_code( @_ ) : sub { $_[0] == $_[1] };
+		
 	my @already;
 	$self->where(
 		sub {
@@ -427,16 +439,18 @@ sub union {
 }
 
 sub intersect {
-	my $self    = shift;
-	my $other   = shift;
-	my @compare = @_ ? LINQ::Util::Internal::assert_code( @_ ) : sub { $_[0] == $_[1] };
+	my $self  = shift;
+	my $other = shift;
+	my @compare =
+		@_ ? LINQ::Util::Internal::assert_code( @_ ) : sub { $_[0] == $_[1] };
 	$self->where( sub { $other->contains( $_, @compare ) } );
 }
 
 sub except {
-	my $self    = shift;
-	my $other   = shift;
-	my @compare = @_ ? LINQ::Util::Internal::assert_code( @_ ) : sub { $_[0] == $_[1] };
+	my $self  = shift;
+	my $other = shift;
+	my @compare =
+		@_ ? LINQ::Util::Internal::assert_code( @_ ) : sub { $_[0] == $_[1] };
 	$self->where( sub { not $other->contains( $_, @compare ) } );
 }
 
@@ -474,7 +488,7 @@ sub sequence_equal {
 		else {
 			return !!0 unless $got1[0] == $got2[0];
 		}
-	}
+	} #/ while ( 1 )
 } #/ sub sequence_equal
 
 my $_with_default = sub {
@@ -533,7 +547,8 @@ sub single {
 	return $found->element_at( 0 ) if $found->count == 1;
 	$found->count == 0
 		? LINQ::Util::Internal::throw( 'NotFound', collection => $self )
-		: LINQ::Util::Internal::throw( 'MultipleFound', collection => $self, found => $found );
+		: LINQ::Util::Internal::throw( 'MultipleFound', collection => $self,
+		found => $found );
 }
 
 sub single_or_default {
@@ -565,15 +580,15 @@ sub any {
 	my $self = shift;
 	my $iter = @_ ? $self->where( @_ )->to_iterator : $self->to_iterator;
 	my @got  = $iter->();
-	!! scalar @got;
+	!!scalar @got;
 }
 
 sub all {
 	my $self  = shift;
 	my $check = LINQ::Util::Internal::assert_code( @_ );
 	my $iter  = $self->where( sub { not $check->( $_ ) } )->to_iterator;
-	my @got  = $iter->();
-	! scalar @got;
+	my @got   = $iter->();
+	!scalar @got;
 }
 
 sub contains {
@@ -674,12 +689,14 @@ sub zip {
 	my @results;
 	
 	require LINQ;
-	LINQ::LINQ( sub {
-		my @r1 = $iter1->();
-		my @r2 = $iter2->();
-		return LINQ::END unless @r1 && @r2;
-		$map->( $r1[0], $r2[0] );
-	} );
+	LINQ::LINQ(
+		sub {
+			my @r1 = $iter1->();
+			my @r2 = $iter2->();
+			return LINQ::END unless @r1 && @r2;
+			$map->( $r1[0], $r2[0] );
+		}
+	);
 } #/ sub zip
 
 sub default_if_empty {
@@ -687,7 +704,7 @@ sub default_if_empty {
 	my $item = shift;
 	
 	if ( $self->count == 0 ) {
-		return LINQ::Util::Internal::create_linq( [ $item ] );
+		return LINQ::Util::Internal::create_linq( [$item] );
 	}
 	
 	return $self;
@@ -710,7 +727,7 @@ sub foreach {
 		die( $e ) unless $e->isa( 'LINQ::LAST' );
 	}
 	return;
-}
+} #/ sub foreach
 
 1;
 
@@ -1360,4 +1377,3 @@ the same terms as the Perl 5 programming language system itself.
 THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
 WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
 MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-

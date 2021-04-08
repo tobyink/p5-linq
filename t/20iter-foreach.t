@@ -29,10 +29,12 @@ my $output = '';
 
 my $collection = LINQ [ 1 .. 100 ];
 
-$collection->foreach( sub {
-	LINQ::LAST if $_ == 10;
-	$output .= $_;
-} );
+$collection->foreach(
+	sub {
+		LINQ::LAST if $_ == 10;
+		$output .= $_;
+	}
+);
 
 is( $output, '123456789' );
 

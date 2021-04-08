@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -28,7 +29,7 @@ use LINQ qw( Range Repeat );
 my $collection = Repeat( "Hello" );
 
 ok(
-	! $collection->all( qr/Goodbye/ ),
+	!$collection->all( qr/Goodbye/ ),
 	"Repeated 'Hello' are not all 'Goodbye'",
 );
 

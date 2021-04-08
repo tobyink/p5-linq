@@ -21,7 +21,6 @@ sub check_fields {
 
 1;
 
-
 =pod
 
 =encoding utf-8

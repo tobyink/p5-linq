@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -37,7 +38,7 @@ my $c2 = LINQ( sub { die bless( {}, 'My::Error' ) } )->take_while( sub { 1 } );
 my $e2 = exception { $c2->to_list };
 
 is(
-	ref($e2),
+	ref( $e2 ),
 	'My::Error',
 	'Blessed exception'
 );

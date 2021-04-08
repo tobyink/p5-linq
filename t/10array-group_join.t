@@ -65,7 +65,8 @@ my $order = sub { $_->[0] };
 	);
 }
 
-note "The behaviour of right outer group join and full outer group join is currently undefined.";
+note
+	"The behaviour of right outer group join and full outer group join is currently undefined.";
 note "For now, they result in exceptions.";
 
 {
@@ -84,5 +85,4 @@ note "For now, they result in exceptions.";
 	isa_ok( $e, 'LINQ::Exception::CallerError', '$e' );
 }
 
-	
 done_testing;

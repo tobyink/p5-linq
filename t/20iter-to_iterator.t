@@ -40,7 +40,7 @@ while ( my ( $name ) = $iter->() ) {
 
 is_deeply(
 	\@names,
-	[ qw/ Anna Elsa Kristoff Sophia Rapunzel / ],
+	[qw/ Anna Elsa Kristoff Sophia Rapunzel /],
 	'to_iterator worked'
 );
 

@@ -7,8 +7,9 @@ package LINQ::FieldSet::Assertion;
 my $_process_args = sub {
 	require Scalar::Util;
 	if ( Scalar::Util::blessed( $_[0] )
-	and  Scalar::Util::blessed( $_[1] )
-	and  @_ < 4 ) {
+		and Scalar::Util::blessed( $_[1] )
+		and @_ < 4 )
+	{
 		return $_[2] ? ( $_[1], $_[0] ) : ( $_[0], $_[1] );
 	}
 	
@@ -47,7 +48,7 @@ sub _known_parameter_names {
 		'not'     => 0,
 		'nocase'  => 0,
 	);
-}
+} #/ sub _known_parameter_names
 
 sub coderef {
 	my ( $self ) = ( shift );
@@ -66,67 +67,67 @@ sub BUILD {
 
 sub _build_coderef {
 	my ( $self ) = ( shift );
-	my @checks = map $self->_make_check($_), @{ $self->fields };
+	my @checks   = map $self->_make_check( $_ ), @{ $self->fields };
 	return sub {
 		for my $check ( @checks ) {
 			return !!0 unless $check->( $_ );
 		}
 		return !!1;
 	};
-}
+} #/ sub _build_coderef
 
 my %templates = (
-	'numeric =='     => '%s == %s',
-	'numeric !='     => '%s != %s',
-	'numeric >'      => '%s >  %s',
-	'numeric >='     => '%s >= %s',
-	'numeric <'      => '%s <  %s',
-	'numeric <='     => '%s <= %s',
-	'string =='      => '%s eq %s',
-	'string !='      => '%s ne %s',
-	'string >'       => '%s gt %s',
-	'string >='      => '%s ge %s',
-	'string <'       => '%s lt %s',
-	'string <='      => '%s le %s',
-	'null =='        => 'defined( %s )',
+	'numeric ==' => '%s == %s',
+	'numeric !=' => '%s != %s',
+	'numeric >'  => '%s >  %s',
+	'numeric >=' => '%s >= %s',
+	'numeric <'  => '%s <  %s',
+	'numeric <=' => '%s <= %s',
+	'string =='  => '%s eq %s',
+	'string !='  => '%s ne %s',
+	'string >'   => '%s gt %s',
+	'string >='  => '%s ge %s',
+	'string <'   => '%s lt %s',
+	'string <='  => '%s le %s',
+	'null =='    => 'defined( %s )',
 );
 
 my $_like_to_regexp = sub {
 	my ( $like, $ci ) = @_;
-	my $re = '';
+	my $re      = '';
 	my %anchors = (
-		start => substr($like, 0,1) ne '%',
-		end   => substr($like,-1,1) ne '%',
+		start => substr( $like, 0,  1 ) ne '%',
+		end   => substr( $like, -1, 1 ) ne '%',
 	);
 	my @parts = split qr{(\\*[.%])}, $like;
 	for my $p ( @parts ) {
 		next unless length $p;
 		my $backslash_count =()= $p =~ m{(\\)}g;
-		my $wild_count =()= $p =~ m{([%.])}g;
-		if ($wild_count) {
+		my $wild_count      =()= $p =~ m{([%.])}g;
+		if ( $wild_count ) {
 			if ( $backslash_count && $backslash_count % 2 ) {
-				my $last = substr( $p, -2, 2, '');
+				my $last = substr( $p, -2, 2, '' );
 				$p =~ s{\\\\}{\\};
-				$re .= quotemeta( $p . substr($last, -1, 1) );
+				$re .= quotemeta( $p . substr( $last, -1, 1 ) );
 			}
 			elsif ( $backslash_count ) {
-				my $last = substr( $p, -1, 1, '');
+				my $last = substr( $p, -1, 1, '' );
 				$p =~ s{\\\\}{\\};
 				$re .= quotemeta( $p ) . ( $last eq '%' ? '.*' : '.' );
 			}
 			else {
 				$re .= $p eq '%' ? '.*' : '.';
 			}
-		}
+		} #/ if ( $wild_count )
 		else {
 			$p =~ s{\\(.)}{$1}g;
 			$re .= quotemeta( $p );
 		}
-	}
-
+	} #/ for my $p ( @parts )
+	
 	substr( $re, 0, 0, '\A' ) if $anchors{start};
-	$re .= '\z' if $anchors{end};
-
+	$re .= '\z'               if $anchors{end};
+	
 	$ci ? qr/$re/i : qr/$re/;
 };
 
@@ -143,17 +144,18 @@ sub _make_check {
 		}
 		my $expected = $field->params->{is};
 		my $cmp      = $field->params->{cmp} || "==";
-		my $type     =
-			$field->params->{numeric}           ? 'numeric' :
-			$field->params->{string}            ? 'string'  :
-			!defined($expected)                 ? 'null'    :
-			$expected =~ /^[0-9]+(?:\.[0-9]+)$/ ? 'numeric' : 'string';
-		my $template  = $templates{"$type $cmp"}
+		my $type =
+			$field->params->{numeric}             ? 'numeric'
+			: $field->params->{string}            ? 'string'
+			: !defined( $expected )               ? 'null'
+			: $expected =~ /^[0-9]+(?:\.[0-9]+)$/ ? 'numeric'
+			:                                       'string';
+		my $template = $templates{"$type $cmp"}
 			or LINQ::Util::Internal::throw(
-				"CallerError",
-				message => "Unexpected comparator '$cmp' for type '$type'",
+			"CallerError",
+			message => "Unexpected comparator '$cmp' for type '$type'",
 			);
-		
+			
 		my $guts;
 		if ( $type eq 'null' ) {
 			$guts = sprintf( $template, '$getter->( $_ )' );
@@ -168,7 +170,7 @@ sub _make_check {
 					"$fold( " . B::perlstring( $expected ) . ' )';
 				},
 			);
-		}
+		} #/ elsif ( $field->params->{...})
 		else {
 			$guts = sprintf(
 				$template,
@@ -178,7 +180,7 @@ sub _make_check {
 					B::perlstring( $expected );
 				},
 			);
-		}
+		} #/ else [ if ( $type eq 'null' )]
 		
 		if ( $field->params->{not} ) {
 			$guts = "not( $guts )";
@@ -186,7 +188,7 @@ sub _make_check {
 		
 		no warnings qw( uninitialized );
 		return eval "sub { $guts }";
-	}
+	} #/ if ( exists $field->params...)
 	
 	if ( exists $field->params->{in} ) {
 		for ( qw/ is cmp numeric string like match / ) {
@@ -216,7 +218,7 @@ sub _make_check {
 				return !!0;
 			};
 		}
-	}
+	} #/ if ( exists $field->params...)
 	
 	if ( exists $field->params->{like} ) {
 		for ( qw/ is cmp numeric string in match / ) {
@@ -241,7 +243,7 @@ sub _make_check {
 				$value =~ $match;
 			};
 		}
-	}
+	} #/ if ( exists $field->params...)
 	
 	if ( exists $field->params->{match} ) {
 		for ( qw/ is cmp numeric string in like / ) {
@@ -264,18 +266,18 @@ sub _make_check {
 				match::simple::match( $value, $match );
 			};
 		}
-	}
+	} #/ if ( exists $field->params...)
 	
 	LINQ::Util::Internal::throw(
 		"CallerError",
 		message => "Expected '-is', '-in', or '-like'",
 	) if $field->params->{$_};
-}
+} #/ sub _make_check
 
 sub not {
 	my ( $self ) = ( shift );
 	return 'LINQ::FieldSet::Assertion::NOT'->new(
-		left  => $self,
+		left => $self,
 	);
 }
 
@@ -311,7 +313,7 @@ sub coderef {
 sub not {
 	my ( $self ) = ( shift );
 	return 'LINQ::FieldSet::Assertion::NOT'->new(
-		left  => $self,
+		left => $self,
 	);
 }
 
@@ -385,8 +387,8 @@ use overload ();
 
 sub _build_coderef {
 	my ( $self ) = ( shift );
-	my $left  = $self->left->coderef;
-	my $right = $self->right->coderef;
+	my $left     = $self->left->coderef;
+	my $right    = $self->right->coderef;
 	return sub { $left->( $_ ) and $right->( $_ ) };
 }
 
@@ -409,8 +411,8 @@ use overload ();
 
 sub _build_coderef {
 	my ( $self ) = ( shift );
-	my $left  = $self->left->coderef;
-	my $right = $self->right->coderef;
+	my $left     = $self->left->coderef;
+	my $right    = $self->right->coderef;
 	return sub { $left->( $_ ) or $right->( $_ ) };
 }
 

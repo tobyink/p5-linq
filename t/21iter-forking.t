@@ -1,3 +1,4 @@
+
 =pod
 
 =encoding utf-8
@@ -26,13 +27,14 @@ use Test::Modern;
 use LINQ qw( LINQ );
 
 my $counter = 0;
-my $numbers = LINQ( sub {
-	return LINQ::END if $counter > 100;
-	++$counter;
-} );
+my $numbers = LINQ(
+	sub {
+		return LINQ::END if $counter > 100;
+		++$counter;
+	}
+);
 
-
-my $evens  = $numbers->where( sub { $_ %  2 == 0 } );
+my $evens  = $numbers->where( sub { $_ % 2 == 0 } );
 my $dozens = $numbers->where( sub { $_ % 12 == 0 } );
 
 is(
@@ -88,7 +90,7 @@ ok(
 );
 
 ok(
-	! $dozens->contains( 100 ),
+	!$dozens->contains( 100 ),
 	'! $dozens->contains( 100 )'
 );
 

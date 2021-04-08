@@ -1,28 +1,32 @@
 use LINQ 'LINQ';
 use Test::Modern;
 
-my $departments = LINQ( [
-	{ dept_name => 'Accounts',  cost_code => 1 },
-	{ dept_name => 'IT',        cost_code => 7 },
-	{ dept_name => 'Marketing', cost_code => 8 },
-] );
+my $departments = LINQ(
+	[
+		{ dept_name => 'Accounts',  cost_code => 1 },
+		{ dept_name => 'IT',        cost_code => 7 },
+		{ dept_name => 'Marketing', cost_code => 8 },
+	]
+);
 
-my $people = LINQ( [
-	{ name => "Alice", dept => 'Marketing' },
-	{ name => "Bob",   dept => 'IT' },
-	{ name => "Carol", dept => 'IT' },
-] );
+my $people = LINQ(
+	[
+		{ name => "Alice", dept => 'Marketing' },
+		{ name => "Bob",   dept => 'IT' },
+		{ name => "Carol", dept => 'IT' },
+	]
+);
 
 my $BY_HASH_KEY = sub {
-	my ($key) = @_;
+	my ( $key ) = @_;
 	return $_->{$key};
 };
 
 my $joined = $departments->group_join(
 	$people,
-	-left,                         # left join
-	[ $BY_HASH_KEY, 'dept_name' ], # select from $departments by hash key
-	[ $BY_HASH_KEY, 'dept' ],      # select from $people by hash key
+	-left,                            # left join
+	[ $BY_HASH_KEY, 'dept_name' ],    # select from $departments by hash key
+	[ $BY_HASH_KEY, 'dept' ],         # select from $people by hash key
 	sub {
 		my ( $dept, $people ) = @_;
 		return {
@@ -38,18 +42,18 @@ is_deeply(
 	[
 		{
 			'cost_code' => 1,
-			'dept' => 'Accounts',
-			'people' => []
+			'dept'      => 'Accounts',
+			'people'    => []
 		},
 		{
 			'cost_code' => 7,
-			'dept' => 'IT',
-			'people' => [ 'Bob', 'Carol' ]
+			'dept'      => 'IT',
+			'people'    => [ 'Bob', 'Carol' ]
 		},
 		{
 			'cost_code' => 8,
-			'dept' => 'Marketing',
-			'people' => [ 'Alice' ]
+			'dept'      => 'Marketing',
+			'people'    => ['Alice']
 		}
 	],
 	'group_join example from the documentation works'

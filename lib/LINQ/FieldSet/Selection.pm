@@ -17,7 +17,7 @@ sub _known_parameter_names {
 	
 	return (
 		$self->SUPER::_known_parameter_names,
-		'as'   => 1,
+		'as' => 1,
 	);
 }
 
@@ -52,13 +52,13 @@ sub _build_coderef {
 		}
 		$asterisk ? Object::Adhoc::object( \%output ) : bless( \%output, $bless );
 	};
-}
+} #/ sub _build_coderef
 
 sub _sql_selection {
 	my ( $self, $name_quoter ) = ( shift, @_ );
 	$name_quoter ||= sub {
 		my $name = shift;
-		return sprintf( '"%s"', quotemeta($name) );
+		return sprintf( '"%s"', quotemeta( $name ) );
 	};
 	return if $self->seen_asterisk;
 	
@@ -67,7 +67,7 @@ sub _sql_selection {
 		my $orig_name = $field->value;
 		my $aliased   = $field->name;
 		return if ref( $orig_name );
-		return if ! defined( $aliased );
+		return if !defined( $aliased );
 		
 		if ( $aliased eq $orig_name ) {
 			push @cols, $name_quoter->( $orig_name );
@@ -79,8 +79,8 @@ sub _sql_selection {
 				$name_quoter->( $aliased ),
 			);
 		}
-	}
+	} #/ for my $field ( @{ $self...})
 	return join( q[, ], @cols );
-}
+} #/ sub _sql_selection
 
 1;

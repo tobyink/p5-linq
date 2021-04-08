@@ -31,13 +31,13 @@ sub BUILDARGS {
 	my $seen_asterisk;
 	
 	ARG: while ( @args ) {
-		my $value  = shift @args;
+		my $value = shift @args;
 		if ( $value eq '*' ) {
 			$seen_asterisk = 1;
 			next ARG;
 		}
 		my %params = ();
-		while ( @args and ! ref $args[0] and $args[0] =~ /\A-/ ) {
+		while ( @args and !ref $args[0] and $args[0] =~ /\A-/ ) {
 			my $p_name = substr( shift( @args ), 1 );
 			if ( $known{$p_name} ) {
 				$params{$p_name} = shift( @args );
@@ -51,7 +51,7 @@ sub BUILDARGS {
 					message => "Unknown field parameter '$p_name'",
 				);
 			}
-		}
+		} #/ while ( @args and !ref $args...)
 		
 		my $field = 'LINQ::Field'->new(
 			value  => $value,
@@ -59,13 +59,13 @@ sub BUILDARGS {
 			params => \%params,
 		);
 		push @fields, $field;
-	}
+	} #/ ARG: while ( @args )
 	
 	return {
 		fields        => \@fields,
 		seen_asterisk => $seen_asterisk,
 	};
-}
+} #/ sub BUILDARGS
 
 sub fields_hash {
 	my ( $self ) = ( shift );
@@ -76,7 +76,7 @@ sub _build_fields_hash {
 	my ( $self ) = ( shift );
 	my %fields;
 	foreach my $field ( @{ $self->fields } ) {
-		$fields{$field->name} = $field;
+		$fields{ $field->name } = $field;
 	}
 	return \%fields;
 }

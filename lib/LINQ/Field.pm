@@ -20,15 +20,15 @@ sub BUILD {
 		if ( defined $self->{params}{as} ) {
 			$self->{name} = $self->{params}{as};
 		}
-		elsif ( ! ref $self->{value} and $self->{value} =~ /\A[^\W0-9]\w*\z/ ) {
+		elsif ( !ref $self->{value} and $self->{value} =~ /\A[^\W0-9]\w*\z/ ) {
 			$self->{name} = $self->{value};
 		}
 		else {
 			$self->{name} = sprintf( '_%d', $self->{index} );
 		}
-	}
+	} #/ if ( not defined $self...)
 	
-}
+} #/ sub BUILD
 
 sub getter {
 	my ( $self ) = @_;
@@ -53,6 +53,6 @@ sub _build_getter {
 		}
 		scalar( $blessed ? $_->$attr : $_->{$attr} );
 	};
-}
+} #/ sub _build_getter
 
 1;

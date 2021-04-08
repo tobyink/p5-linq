@@ -50,7 +50,7 @@ is_deeply(
 my $c4 = Range( 7, undef );
 
 is_deeply(
-	$c4->take(4)->to_array,
+	$c4->take( 4 )->to_array,
 	[ 7 .. 10 ],
 	'Range(7, undef)',
 );

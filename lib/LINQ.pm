@@ -13,6 +13,7 @@ our $FORCE_ITERATOR;
 our $IN_LOOP;
 
 my $end = do {
+
 	package LINQ::END;
 	our $AUTHORITY = 'cpan:TOBYINK';
 	our $VERSION   = '0.000_007';
@@ -23,6 +24,7 @@ my $end = do {
 };
 
 my $last = do {
+
 	package LINQ::LAST;
 	our $AUTHORITY = 'cpan:TOBYINK';
 	our $VERSION   = '0.000_007';
@@ -44,7 +46,7 @@ BEGIN {
 			message => "Cannot call LINQ::LAST outside foreach",
 		);
 	};
-}
+} #/ BEGIN
 
 sub LINQ ($) {
 	my $data = shift;

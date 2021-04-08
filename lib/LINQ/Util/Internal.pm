@@ -52,6 +52,6 @@ sub assert_code {
 	}
 	
 	return $code;
-}
+} #/ sub assert_code
 
 1;

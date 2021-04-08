@@ -1,28 +1,32 @@
 use LINQ 'LINQ';
 use Test::Modern;
 
-my $people = LINQ( [
-	{ name => "Alice", dept => 'Marketing' },
-	{ name => "Bob",   dept => 'IT' },
-	{ name => "Carol", dept => 'IT' },
-] );
+my $people = LINQ(
+	[
+		{ name => "Alice", dept => 'Marketing' },
+		{ name => "Bob",   dept => 'IT' },
+		{ name => "Carol", dept => 'IT' },
+	]
+);
 
-my $departments = LINQ( [
-	{ dept_name => 'Accounts',  cost_code => 1 },
-	{ dept_name => 'IT',        cost_code => 7 },
-	{ dept_name => 'Marketing', cost_code => 8 },
-] );
+my $departments = LINQ(
+	[
+		{ dept_name => 'Accounts',  cost_code => 1 },
+		{ dept_name => 'IT',        cost_code => 7 },
+		{ dept_name => 'Marketing', cost_code => 8 },
+	]
+);
 
 my $BY_HASH_KEY = sub {
-	my ($key) = @_;
+	my ( $key ) = @_;
 	return $_->{$key};
 };
 
 my $joined = $people->join(
 	$departments,
-	-inner,                        # inner join
-	[ $BY_HASH_KEY, 'dept' ],      # select from $people by hash key
-	[ $BY_HASH_KEY, 'dept_name' ], # select from $departments by hash key
+	-inner,                           # inner join
+	[ $BY_HASH_KEY, 'dept' ],         # select from $people by hash key
+	[ $BY_HASH_KEY, 'dept_name' ],    # select from $departments by hash key
 	sub {
 		my ( $person, $dept ) = @_;
 		return {
