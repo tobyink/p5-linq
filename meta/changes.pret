@@ -28,9 +28,21 @@
 	].
 
 `LINQ 0.000_005 cpan:TOBYINK`
-	issued  2021-04-04;
+	issued  2021-04-06;
 	changeset [
 		item "Document LINQ::Exception."^^Documentation;
 		item "`foreach` method"^^Addition;
 		item "`target_class` method"^^Removal;
+	].
+
+`LINQ 0.000_006 cpan:TOBYINK`
+	issued  2021-04-08;
+	changeset [
+		item "New LINQ::Util module with two new functions: `fields` and `check_fields`."^^Addition;
+		item "LINQ::Field, LINQ::FieldSet, LINQ::FieldSet::Selection, and LINQ::FieldSet::Assertion modules."^^Addition;
+		item "Improved `skip` and `skip_while` methods."^^Change;
+		item "Improved `concat` method."^^Change;
+		item "Make `zip` work on potentially infinite collections."^^Change;
+		item "Use Github Issues as issue tracker."^^Packaging;
+		item "Require Perl 5.8.3, Object::Adhoc, and match::simple."^^Packaging;
 	].

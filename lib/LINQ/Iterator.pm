@@ -104,7 +104,7 @@ if ( $] < 5.010000 ) {
 package LINQ::Iterator;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_005';
+our $VERSION   = '0.000_006';
 
 use Role::Tiny::With ();
 use LINQ::Util::Internal ();
