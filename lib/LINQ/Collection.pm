@@ -563,14 +563,17 @@ sub element_at_or_default {
 
 sub any {
 	my $self = shift;
-	@_
-		? $self->where( @_ )->any
-		: ( $self->count > 0 );
+	my $iter = @_ ? $self->where( @_ )->to_iterator : $self->to_iterator;
+	my @got  = $iter->();
+	!! scalar @got;
 }
 
 sub all {
-	my $self = shift;
-	$self->where( @_ )->count == $self->count;
+	my $self  = shift;
+	my $check = LINQ::Util::Internal::assert_code( @_ );
+	my $iter  = $self->where( sub { not $check->( $_ ) } )->to_iterator;
+	my @got  = $iter->();
+	! scalar @got;
 }
 
 sub contains {
@@ -582,7 +585,11 @@ sub contains {
 		return $self->any( LINQ::Util::Internal::assert_code( @args ) );
 	}
 	
-	$self->any( sub { $_ == $x } );
+	my $iter = $self->to_iterator;
+	while ( 1 ) {
+		my @got = $iter->() or return !!0;
+		return !!1 if $got[0] == $x;
+	}
 } #/ sub contains
 
 sub count {

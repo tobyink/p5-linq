@@ -1,11 +1,4 @@
-Classes:
+Classes (likely separate distributions):
 - LINQ::DBI
 - LINQ::LibXML
-
-Optimization:
-- any: short-circuit true, avoid to_list
-- all: short-circuit false, avoid to_list
-- contains: short-circuit true, avoid to_list
-
-Features:
-- LINQ::Collection->to_array ought to return a tied array pointing back to the collection
+- LINQ::Path (Path::Tiny/Path::Iterator::Rule)
