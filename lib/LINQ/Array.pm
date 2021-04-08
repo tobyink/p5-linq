@@ -9,7 +9,7 @@ if ( $] < 5.010000 ) {
 package LINQ::Array;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_006';
+our $VERSION   = '0.000_007';
 
 use Class::Tiny qw( array );
 use Role::Tiny::With ();

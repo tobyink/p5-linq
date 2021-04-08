@@ -5,7 +5,7 @@ use warnings;
 package LINQ::Util::Internal;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_006';
+our $VERSION   = '0.000_007';
 
 sub create_linq {
 	require LINQ;

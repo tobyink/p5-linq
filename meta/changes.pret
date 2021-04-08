@@ -46,3 +46,15 @@
 		item "Use Github Issues as issue tracker."^^Packaging;
 		item "Require Perl 5.8.3, Object::Adhoc, and match::simple."^^Packaging;
 	].
+
+`LINQ 0.000_007 cpan:TOBYINK`
+	label "LINQ, James LINQ";
+	issued  2021-04-08;
+	changeset [
+		item "Improved `any` and `all` methods."^^Change;
+		item "Improved `select` and `where` methods."^^Change;
+		item "Improved `contains` method."^^Change;
+		item "Improved `select_many` method."^^Change;
+		item "Improved `sequence_equal` method."^^Change;
+		item "Document working with infinite LINQ collections."^^Documentation;
+	].
