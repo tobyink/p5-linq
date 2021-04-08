@@ -1281,6 +1281,23 @@ method is provided by the MoreLINQ extension.
 
 =back
 
+=head1 WORKING WITH INFINITE COLLECTIONS
+
+Because LINQ collections can be instantiated from an iterator, they may
+contain infinite items.
+
+Certain methods aggregate the entire collection, so can go into an infinite
+loop. This includes: C<aggregate>, C<min>, C<max>, C<sum>, C<average>, and
+C<count>.
+
+Other methods which will go into an infinite loop on infinite collections:
+C<join>, C<group_join>, C<group_by>, C<order_by>, C<order_by_descending>,
+C<reverse>, C<to_lookup>, C<to_dictionary>, and C<to_list>.
+
+The C<to_array> method in general I<will> succeed on infinite collections
+as it can return a reference to a tied array. However, trying to dereference
+the entire array to a list will fail.
+
 =head1 BUGS
 
 Please report any bugs to
