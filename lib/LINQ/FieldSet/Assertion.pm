@@ -14,7 +14,7 @@ my $_process_args = sub {
 	
 	my ( $self, @other ) = @_;
 	my $other = __PACKAGE__->new( @other );
-	return ( $self, $other ); 
+	return ( $self, $other );
 };
 
 our $AUTHORITY = 'cpan:TOBYINK';
@@ -101,8 +101,8 @@ my $_like_to_regexp = sub {
 	my @parts = split qr{(\\*[.%])}, $like;
 	for my $p ( @parts ) {
 		next unless length $p;
-		my $backslash_count =()= $p =~ m{(\\)}g; 
-		my $wild_count =()= $p =~ m{([%.])}g; 
+		my $backslash_count =()= $p =~ m{(\\)}g;
+		my $wild_count =()= $p =~ m{([%.])}g;
 		if ($wild_count) {
 			if ( $backslash_count && $backslash_count % 2 ) {
 				my $last = substr( $p, -2, 2, '');
