@@ -7,14 +7,14 @@ package LINQ::Util;
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.000_005';
 
-use Exporter::Shiny qw( fields assert_fields );
+use Exporter::Shiny qw( fields check_fields );
 
 sub fields {
 	require LINQ::FieldSet::Selection;
 	'LINQ::FieldSet::Selection'->new( @_ );
 }
 
-sub assert_fields {
+sub check_fields {
 	require LINQ::FieldSet::Assertion;
 	'LINQ::FieldSet::Assertion'->new( @_ );
 }
@@ -43,14 +43,16 @@ LINQ::Util - useful utilities to make working with LINQ collections easier
     { name => 'Dave',  age => 33, dept => 'Accounts'  },
   ] );
   
-  my $dont_care_about_age = $collection->select( fields( 'name', 'dept' ) );
+  my $name_and_dept = $collection->select( fields( 'name', 'dept' ) );
   
-  for ( $dont_care_about_age->to_list ) {
+  for ( $name_and_dept->to_list ) {
     printf( "Hi, I'm %s from %s\n", $_->name, $_->dept );
   }
+head1 DESCRIPTION
 
-=head1 DESCRIPTION
-
+LINQ::Util provides a collection of auxiliary functions to make working with
+LINQ collections a little more intuitive and perhaps avoid passing a bunch of
+C<< sub { ... } >> arguments to C<select> and C<where>.
 
 =head1 FUNCTIONS
 
@@ -99,6 +101,98 @@ The aim of the C<fields> function is to allow the LINQ C<select> method to
 function more like an SQL SELECT, where you give a list of fields you wish
 to select.
 
+=item C<< check_fields( SPEC ) >>
+
+If C<< fields() >> can be compared to SQL SELECT, then C<< check_fields() >>
+can be compared to SQL WHERE. Like C<< fields() >> it assumes your data is
+hashrefs or blessed objects with attributes.
+
+  # Select people called Bob.
+  $people
+    ->where( check_fields( 'name', -is => 'Bob' ) )
+    ->select( fields( 'name', 'age', 'dept' ) );
+
+Different operators can be used. Whether performing string or numeric
+comparison, ">", "<", ">=", "<=", "==", and "!=" are used. (And the C<< -is >>
+parameter is used to provide the right hand side of the comparison, even
+for comparisons like "!=".)
+
+  $people
+    ->where( check_fields( 'name', -cmp => '>', -is => 'Bob' ) );
+
+C<< check_fields() >> will probably guess correctly whether you want numeric
+or string comparison, but if you need to specify, you can:
+
+  $people
+    ->where( check_fields( 'phone', -is => '012345679', -string );
+  
+   $people
+      ->where( check_fields( 'age', -is => '33', -numeric );
+
+String comparisons can be made case-insensitive:
+
+  $people
+    ->where( check_fields( 'name', -is => 'Bob', -nocase ) );
+
+You can use C<< -in >> to find a value in an arrayref. These comparisons are
+always stringy and case-sensitive.
+
+  $people
+    ->where( check_fields( 'name', -in => ['Alice', 'Bob'] ) );
+
+You can invert any comparison using C<< -not >>.
+
+  $people
+    ->where( check_fields( 'name', -not, -in => ['Alice', 'Bob'] ) );
+
+You can perform more complex matches using L<match::simple>:
+
+  $people
+    ->where( check_fields( 'name', -match => qr/^[RB]ob(ert)?$/i ) );
+
+SQL LIKE is also supported:
+
+  $people
+    ->where( check_fields( 'name', -like => 'Bob%', -nocase ) );
+
+You can check multiple fields at once. There's an implied "AND" between the
+conditions.
+
+  $people
+    ->where( check_fields(
+      'name',       -is => 'Bob',
+      'age',  -not, -is => 33,
+    ) );
+
+You can invert a whole C<< check_fields() >> using the C<< not >> method:
+
+  my $where_not_bob = check_fields( 'name', -is => 'Bob' )->not;
+  
+  $people->where( $where_not_bob );
+
+Generally, you can use C<< not >>, C<< and >>, and C<< or >> methods to compose
+more complex conditions. The C<< ~ >>, C<< & >>, and C<< | >> bitwise operators
+are also overloaded to compose conditions.
+
+  my $where_alice = check_fields( 'name', -is => 'Alice' );
+  my $where_bob   = check_fields( 'name', -is => 'Bob' );
+  
+  my $where_alice_or_bob = $where_alice->or( $where_bob );
+  
+  # Or...
+  my $where_alice_or_bob = $where_alice | $where_bob;
+  
+  # Or...
+  my $where_alice_or_bob =
+    check_fields( 'name', -is => 'Alice' )
+            ->or( 'name', -is => 'Bob' );
+
+Like with C<< fields() >>, fields can be a coderef.
+
+  my $where_bob = check_fields(
+    sub { $_->get_name("givenName") }, -is => 'Bob'
+  );
+
 =back
 
 =head1 BUGS
@@ -118,7 +212,7 @@ Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
 
 =head1 COPYRIGHT AND LICENCE
 
-This software is copyright (c) 2014, 2021 by Toby Inkster.
+This software is copyright (c) 2021 by Toby Inkster.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

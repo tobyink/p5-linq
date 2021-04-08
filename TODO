@@ -11,10 +11,3 @@ Optimization:
 
 Features:
 - LINQ::Collection->to_array ought to return a tied array pointing back to the collection
-- LINQ::Util::assert_fields:
-
-	$data->where( assert_fields(
-		'name',    -is => 'Bob',
-		'age',     -is => 30, -cmp => '>=',
-		'country', -in => [ 'UK', 'USA', 'France' ],
-	) );
