@@ -3,8 +3,6 @@ Classes:
 - LINQ::LibXML
 
 Optimization:
-- select_many: avoid to_list
-- sequence_equal: avoid to_list
 - any: short-circuit true, avoid to_list
 - all: short-circuit false, avoid to_list
 - contains: short-circuit true, avoid to_list

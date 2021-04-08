@@ -50,9 +50,34 @@ sub where {
 sub select_many {
 	my $self = shift;
 	my $map  = LINQ::Util::Internal::assert_code( @_ );
-	LINQ::Util::Internal::create_linq(
-		[ map $map->( $_ )->$_coerce->to_list, $self->to_list ],
-	);
+	
+	my $outer = $self->to_iterator;
+	my $inner;
+	my $end;
+	
+	require LINQ;
+	LINQ::Util::Internal::create_linq( sub {
+		BODY: {
+			return LINQ::END() if $end;
+			if ( not $inner ) {
+				$inner = $outer->();
+				if ( defined $inner ) {
+					local $_;
+					$inner = $map->( $_ = $inner )->$_coerce->to_iterator;
+				}
+				else {
+					$end = 1;
+					return LINQ::END();
+				}
+			}
+			my @got = $inner->();
+			if ( not @got ) {
+				undef $inner;
+				redo BODY;
+			}
+			return @got;
+		}
+	} );
 }
 
 sub min {
@@ -391,24 +416,37 @@ sub sequence_equal {
 	my $self = shift;
 	my ( $other, @compare ) = @_;
 	
-	return !!0 unless $self->count == $other->count;
-	
-	my @list1 = $self->to_list;
-	my @list2 = $other->to_list;
-	return !!0 unless @list1 == @list2;
-	
+	my $compare;
 	if ( @compare ) {
-		my $compare = LINQ::Util::Internal::assert_code( @compare );
-		for my $i ( 0 .. $#list1 ) {
-			return !!0 unless $compare->( $list1[$i], $list2[$i] );
-		}
-		return !!1;
+		$compare = LINQ::Util::Internal::assert_code( @compare );
 	}
 	
-	for my $i ( 0 .. $#list1 ) {
-		return !!0 unless $list1[$i] == $list2[$i];
+	my $iter1 = $self->to_iterator;
+	my $iter2 = $other->to_iterator;
+	
+	while ( 1 ) {
+		my @got1 = $iter1->();
+		my @got2 = $iter2->();
+		
+		if ( not @got1 ) {
+			if ( @got2 ) {
+				return !!0;
+			}
+			else {
+				return !!1;
+			}
+		}
+		elsif ( not @got2 ) {
+			return !!0;
+		}
+		
+		if ( $compare ) {
+			return !!0 unless $compare->( $got1[0], $got2[0] );
+		}
+		else {
+			return !!0 unless $got1[0] == $got2[0];
+		}
 	}
-	return !!1;
 } #/ sub sequence_equal
 
 my $_with_default = sub {
