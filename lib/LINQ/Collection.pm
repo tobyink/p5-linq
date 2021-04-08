@@ -34,17 +34,45 @@ my $_coerce = sub {
 sub select {
 	my $self = shift;
 	my $map  = LINQ::Util::Internal::assert_code( @_ );
-	LINQ::Util::Internal::create_linq(
-		[ map scalar( $map->( $_ ) ), $self->to_list ],
-	);
+	
+	my $iter = $self->to_iterator;
+	my $stopped;
+	
+	require LINQ;
+	LINQ::LINQ( sub {
+		return LINQ::END() if $stopped;
+		my @got = $iter->();
+		if ( @got ) {
+			local $_;
+			return scalar $map->( $_ = $got[0] );
+		}
+		++$stopped;
+		return LINQ::END();
+	} );
 }
 
 sub where {
 	my $self   = shift;
 	my $filter = LINQ::Util::Internal::assert_code( @_ );
-	LINQ::Util::Internal::create_linq(
-		[ grep $filter->( $_ ), $self->to_list ],
-	);
+	
+	my $iter = $self->to_iterator;
+	my $stopped;
+	
+	require LINQ;
+	LINQ::LINQ( sub {
+		GETVAL: {
+			return LINQ::END() if $stopped;
+			my @got = $iter->();
+			if ( @got ) {
+				local $_;
+				my $pass = $filter->( $_ = $got[0] );
+				return $got[0] if $pass;
+				redo GETVAL;
+			}
+			++$stopped;
+			return LINQ::END();
+		};
+	} );
 }
 
 sub select_many {
@@ -56,7 +84,7 @@ sub select_many {
 	my $end;
 	
 	require LINQ;
-	LINQ::Util::Internal::create_linq( sub {
+	LINQ::LINQ( sub {
 		BODY: {
 			return LINQ::END() if $end;
 			if ( not $inner ) {
@@ -218,7 +246,7 @@ sub take_while {
 	my $iter    = $self->to_iterator;
 	
 	require LINQ;
-	LINQ::Util::Internal::create_linq( sub {
+	LINQ::LINQ( sub {
 		return LINQ::END() if $stopped;
 		my @got = $iter->();
 		if ( ! @got or ! $filter->( $_ = $got[0] ) ) {
@@ -243,7 +271,7 @@ sub skip_while {
 	my $iter    = $self->to_iterator;
 	
 	require LINQ;
-	LINQ::Util::Internal::create_linq( sub {
+	LINQ::LINQ( sub {
 		SKIPPING: {
 			return LINQ::END() if $stopped;
 			my @got = $iter->();
@@ -266,7 +294,7 @@ sub concat {
 	my $idx = 0;
 	
 	require LINQ;
-	LINQ::Util::Internal::create_linq( sub {
+	LINQ::LINQ( sub {
 		FIND_NEXT: {
 			return LINQ::END() if not @collections;
 			
@@ -639,7 +667,7 @@ sub zip {
 	my @results;
 	
 	require LINQ;
-	LINQ::Util::Internal::create_linq( sub {
+	LINQ::LINQ( sub {
 		my @r1 = $iter1->();
 		my @r2 = $iter2->();
 		return LINQ::END unless @r1 && @r2;

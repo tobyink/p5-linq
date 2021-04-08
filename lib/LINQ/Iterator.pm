@@ -157,49 +157,6 @@ sub element_at {
 	$self->LINQ::Collection::element_at( @_ );
 } #/ sub element_at
 
-sub select {
-	my $self = shift;
-	
-	if ( my $guts = $self->_guts ) {
-		my $map = LINQ::Util::Internal::assert_code( @_ );
-		my $idx = 0;
-		return LINQ::Util::Internal::create_linq( sub {
-			my $val = $guts->fetch_ref( $idx++ );
-			if ( ! $val ) {
-				require LINQ;
-				return LINQ::END();
-			}
-			local $_ = $$val;
-			scalar $map->( $_ );
-		} );
-	}
-	
-	$self->LINQ::Collection::select( @_ );
-}
-
-sub where {
-	my $self = shift;
-	
-	if ( my $guts = $self->_guts ) {
-		my $check = LINQ::Util::Internal::assert_code( @_ );
-		my $idx   = 0;
-		return LINQ::Util::Internal::create_linq( sub {
-			GETVAL: {
-				my $val = $guts->fetch_ref( $idx++ );
-				if ( ! $val ) {
-					require LINQ;
-					return LINQ::END();
-				}
-				local $_ = $$val;
-				redo GETVAL unless $check->( $_ );
-				return $$val;
-			};
-		} );
-	}
-	
-	$self->LINQ::Collection::where( @_ );
-}
-
 sub to_iterator {
 	my $self = shift;
 	
