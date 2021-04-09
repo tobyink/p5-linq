@@ -19,7 +19,7 @@ my $_process_args = sub {
 };
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_007';
+our $VERSION   = '0.000_008';
 
 use Class::Tiny;
 use parent qw( LINQ::FieldSet );
@@ -321,7 +321,7 @@ sub or {
 package LINQ::FieldSet::Assertion::Combination;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_007';
+our $VERSION   = '0.000_008';
 
 use Role::Tiny;
 requires( qw/ left right _build_coderef / );
@@ -357,7 +357,7 @@ sub or {
 package LINQ::FieldSet::Assertion::NOT;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_007';
+our $VERSION   = '0.000_008';
 
 use Class::Tiny qw( left );
 use Role::Tiny::With ();
@@ -392,7 +392,7 @@ sub right {
 package LINQ::FieldSet::Assertion::AND;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_007';
+our $VERSION   = '0.000_008';
 
 use Class::Tiny qw( left right );
 use Role::Tiny::With ();
@@ -416,7 +416,7 @@ sub _build_coderef {
 package LINQ::FieldSet::Assertion::OR;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_007';
+our $VERSION   = '0.000_008';
 
 use Class::Tiny qw( left right );
 use Role::Tiny::With ();

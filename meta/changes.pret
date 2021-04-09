@@ -58,3 +58,20 @@
 		item "Improved `sequence_equal` method."^^Change;
 		item "Document working with infinite LINQ collections."^^Documentation;
 	].
+
+`LINQ 0.000_008 cpan:TOBYINK`
+	issued  2021-04-09;
+	changeset [
+		item "Improve test coverage."^^Tests;
+		item "Add pod for LINQ::Field."^^Documentation;
+		item "Add pod for LINQ::FieldSet."^^Documentation;
+		item "Add pod for LINQ::FieldSet::Assertion."^^Documentation;
+		item "Add pod for LINQ::FieldSet::Selection."^^Documentation;
+		item "Add pod for LINQ::Grouping."^^Documentation;
+		item "Add pod for LINQ::Array."^^Documentation;
+		item "Add pod for LINQ::Iterator."^^Documentation;
+		item "Add pod for LINQ::Util::Internal."^^Documentation;
+		item "Improve documentation for LINQ::Exception."^^Documentation;
+		item "Allow `-nocase` and `-in` to be used together in `check_fields()`."^^Change;
+		item "Change `-not` to `-nix` in `check_fields()`."^^Change;
+	].

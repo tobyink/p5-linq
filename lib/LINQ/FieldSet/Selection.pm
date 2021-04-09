@@ -5,7 +5,7 @@ use warnings;
 package LINQ::FieldSet::Selection;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_007';
+our $VERSION   = '0.000_008';
 
 use Class::Tiny;
 use parent qw( LINQ::FieldSet );

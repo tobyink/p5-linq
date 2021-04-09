@@ -9,7 +9,7 @@ if ( $] < 5.010000 ) {
 package LINQ::Grouping;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_007';
+our $VERSION   = '0.000_008';
 
 use Class::Tiny qw( key values );
 
