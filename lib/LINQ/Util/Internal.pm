@@ -56,6 +56,8 @@ sub assert_code {
 
 1;
 
+__END__
+
 =pod
 
 =encoding utf-8
