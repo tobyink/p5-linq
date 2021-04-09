@@ -82,3 +82,88 @@ sub _build_fields_hash {
 }
 
 1;
+
+
+__END__
+
+=pod
+
+=encoding utf-8
+
+=head1 NAME
+
+LINQ::FieldSet - base class for LINQ::FieldSet::{Selection,Assertion}
+
+=head1 DESCRIPTION
+
+This is used internally by LINQ and you probably don't need to know about it
+unless you're writing very specific extensions for LINQ.
+
+=head1 CONSTRUCTOR
+
+=over
+
+=item C<< new( ARGSLIST ) >>
+
+Constructs a fieldset from a list of fields like:
+
+  'LINQ::FieldSet'->new(
+    'field1', -param1 => 'value1', -param2,
+    'field2', -param1 => 'value2',
+  );
+
+The list of allowed parameters and whether each one takes a value is returned
+by the C<_known_parameter_names> method. This is empty in LINQ::FieldSet itself
+so doing anything interesting with this class probably requires subclassing.
+
+=back
+
+=begin trustme
+
+=item BUILDARGS
+
+=end trustme 
+
+=head1 METHODS
+
+=over
+
+=item C<fields>
+
+An arrayref of fields in this fieldset.
+
+=item C<fields_hash>
+
+The same, but as a hashref keyed on field name.
+
+=item C<seen_asterisk>
+
+Whether "*" was seen by the constructor.
+
+=back
+
+=head1 BUGS
+
+Please report any bugs to
+L<http://rt.cpan.org/Dist/Display.html?Queue=LINQ>.
+
+=head1 SEE ALSO
+
+L<LINQ::FieldSet>.
+
+=head1 AUTHOR
+
+Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
+
+=head1 COPYRIGHT AND LICENCE
+
+This software is copyright (c) 2021 by Toby Inkster.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=head1 DISCLAIMER OF WARRANTIES
+
+THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.

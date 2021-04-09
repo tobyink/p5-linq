@@ -437,3 +437,117 @@ sub _build_coderef {
 }
 
 1;
+
+__END__
+
+=pod
+
+=encoding utf-8
+
+=head1 NAME
+
+LINQ::FieldSet::Assertion - represents an SQL-WHERE-like assertion/check
+
+=head1 DESCRIPTION
+
+LINQ::FieldSet::Assertion is a subclass of L<LINQ::FieldSet>.
+
+This is used internally by LINQ and you probably don't need to know about it
+unless you're writing very specific extensions for LINQ. The end user
+interface is the C<check_fields> function in L<LINQ::Util>.
+
+=head1 CONSTRUCTOR
+
+=over
+
+=item C<< new( ARGSLIST ) >>
+
+Constructs a fieldset from a list of fields like:
+
+  'LINQ::FieldSet::Assertion'->new(
+    'field1', -param1 => 'value1', -param2,
+    'field2', -param1 => 'value2',
+  );
+
+Allowed parameters are:
+C<< -is >> (followed by a value),
+C<< -in >> (followed by a value),
+C<< -like >> (followed by a value),
+C<< -match >> (followed by a value),
+C<< -cmp >> (followed by a value),
+C<< -numeric >> (no value),
+C<< -string >> (no value),
+C<< -not >> (no value), and
+C<< -nocase >> (no value).
+
+=back
+
+=begin trustme
+
+=item BUILD
+
+=end trustme 
+
+=head1 METHODS
+
+=over
+
+=item C<< and( OTHER ) >>
+
+Return a LINQ::FieldSet::Assertion::AND object which is a conjunction of this
+assertion and another assertion.
+
+=item C<< or( OTHER ) >>
+
+Return a LINQ::FieldSet::Assertion::OR object which is an inclusive disjunction
+of this assertion and another assertion.
+
+=item C<not>
+
+Return a LINQ::FieldSet::Assertion::NOT object which is the negation of this
+assertion.
+
+=item C<coderef>
+
+Gets a coderef for this assertion; the coderef operates on C<< $_ >>.
+
+=back
+
+The LINQ::FieldSet::Assertion::{AND,OR,NOT} classes are lightweight classes
+which also implement the C<and>, C<or>, C<not>, and C<coderef> methods, and
+have the same overloading as LINQ::FieldSet::Assertion, but do not inherit
+from it.
+
+=head1 OVERLOADING
+
+This class overloads
+C<< & >> to call the C<< and >> method;
+C<< | >> to call the C<< or >> method;
+C<< ~ >> to call the C<< not >> method; and
+C<< &{} >> to call the C<< coderef >> method.
+
+=head1 BUGS
+
+Please report any bugs to
+L<http://rt.cpan.org/Dist/Display.html?Queue=LINQ>.
+
+=head1 SEE ALSO
+
+L<LINQ::FieldSet>, L<LINQ::Util>.
+
+=head1 AUTHOR
+
+Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
+
+=head1 COPYRIGHT AND LICENCE
+
+This software is copyright (c) 2021 by Toby Inkster.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=head1 DISCLAIMER OF WARRANTIES
+
+THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
