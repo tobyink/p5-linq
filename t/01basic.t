@@ -30,10 +30,7 @@ use_ok( 'LINQ::Exception' );
 
 all_pod_files_ok( 'lib', 't' );
 
-{
-	local $TODO = 'must fix before release';
-	all_pod_coverage_ok( 'lib' );
-	version_all_same( 'lib' );
-}
+all_pod_coverage_ok( 'lib' );
+version_all_same( 'lib' );
 
 done_testing;

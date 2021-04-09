@@ -66,7 +66,7 @@ LINQ::Array supports all the methods defined in L<LINQ::Collection>.
 
 =item to_list
 
-=end
+=end trustme
 
 =head1 BUGS
 

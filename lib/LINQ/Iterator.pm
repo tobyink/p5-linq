@@ -211,7 +211,7 @@ LINQ::Iterator supports all the methods defined in L<LINQ::Collection>.
 
 =item to_iterator
 
-=end
+=end trustme
 
 =head1 BUGS
 
