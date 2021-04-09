@@ -137,8 +137,8 @@ my $collection2 = LINQ(
 
 is(
 	$collection2->where( check_fields(
-		'val', -cmp => '>=', -to => 'min',
-		'val', -cmp => '<=', -to => 'max',
+		'val', -cmp => '>=', -to => 'min', -numeric,
+		'val', -cmp => '<=', -to => 'max', -numeric,
 	) )->select( sub { $_->name } )->aggregate( sub { $_[0] . $_[1] } ),
 	'AliceBob',
 	'-to, -cmp',

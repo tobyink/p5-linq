@@ -174,8 +174,8 @@ You can compare one field to another field using C<< -to >>:
     { min => 10, max => 100, value =>  5 },
     { min => 10, max =>  20, value => 50 },
   )->where( check_fields(
-    'value', -cmp => '>=', -to => 'min',
-    'value', -cmp => '<=', -to => 'max',
+    'value', -cmp => '>=', -to => 'min', -numeric,
+    'value', -cmp => '<=', -to => 'max', -numeric,
   ) )->foreach( sub {
     say $_->value;
   } );
