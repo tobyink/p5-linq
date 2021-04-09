@@ -43,4 +43,8 @@ is(
 	'correct exception thrown',
 );
 
+my $total = 0;
+$collection->foreach( sub { $total += $_ } );
+is( $total, 50*101, 'foreach without an explicit LINQ::LAST' );
+
 done_testing;

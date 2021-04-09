@@ -142,10 +142,10 @@ always stringy and case-sensitive.
   $people
     ->where( check_fields( 'name', -in => ['Alice', 'Bob'] ) );
 
-You can invert any comparison using C<< -not >>.
+You can invert any comparison using C<< -nix >>.
 
   $people
-    ->where( check_fields( 'name', -not, -in => ['Alice', 'Bob'] ) );
+    ->where( check_fields( 'name', -nix, -in => ['Alice', 'Bob'] ) );
 
 You can perform more complex matches using L<match::simple>:
 
@@ -163,7 +163,7 @@ conditions.
   $people
     ->where( check_fields(
       'name',       -is => 'Bob',
-      'age',  -not, -is => 33,
+      'age',  -nix, -is => 33,
     ) );
 
 You can invert a whole C<< check_fields() >> using the C<< not >> method:

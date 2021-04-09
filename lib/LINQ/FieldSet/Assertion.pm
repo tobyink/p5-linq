@@ -45,7 +45,7 @@ sub _known_parameter_names {
 		'cmp'     => 1,
 		'numeric' => 0,
 		'string'  => 0,
-		'not'     => 0,
+		'nix'     => 0,
 		'nocase'  => 0,
 	);
 } #/ sub _known_parameter_names
@@ -173,7 +173,7 @@ sub _build_coderef {
 			);
 		} #/ else [ if ( $type eq 'null' )]
 		
-		if ( $field->params->{not} ) {
+		if ( $field->params->{nix} ) {
 			$guts = "not( $guts )";
 		}
 		
@@ -185,25 +185,26 @@ sub _build_coderef {
 sub _make_in_check {
 	my ( $self, $field ) = ( shift, @_ );
 	my $getter = $field->getter;
-	
 	my @expected = @{ $field->params->{in} };
 	
-	if ( $field->params->{not} ) {
+	my $nix = ! $field->params->{nix};
+	
+	if ( $field->params->{nocase} ) {
 		return sub {
-			my $value = $getter->( $_ );
+			my $value = lc $getter->( $_ );
 			for my $expected ( @expected ) {
-				return !!0 if $value eq $expected;
+				return !!$nix if $value eq lc $expected;
 			}
-			return !!1;
+			return !$nix;
 		};
 	}
 	else {
 		return sub {
 			my $value = $getter->( $_ );
 			for my $expected ( @expected ) {
-				return !!1 if $value eq $expected;
+				return !!$nix if $value eq $expected;
 			}
-			return !!0;
+			return !$nix;
 		};
 	}
 }
@@ -257,7 +258,7 @@ sub _make_in_check {
 			$field->params->{nocase},
 		);
 		
-		if ( $field->params->{not} ) {
+		if ( $field->params->{nix} ) {
 			return sub {
 				my $value = $getter->( $_ );
 				$value !~ $match;
@@ -280,7 +281,7 @@ sub _make_match_check {
 	
 	require match::simple;
 	
-	if ( $field->params->{not} ) {
+	if ( $field->params->{nix} ) {
 		return sub {
 			my $value = $getter->( $_ );
 			not match::simple::match( $value, $match );
