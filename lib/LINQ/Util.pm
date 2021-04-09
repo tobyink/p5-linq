@@ -47,7 +47,8 @@ LINQ::Util - useful utilities to make working with LINQ collections easier
   for ( $name_and_dept->to_list ) {
     printf( "Hi, I'm %s from %s\n", $_->name, $_->dept );
   }
-head1 DESCRIPTION
+
+=head1 DESCRIPTION
 
 LINQ::Util provides a collection of auxiliary functions to make working with
 LINQ collections a little more intuitive and perhaps avoid passing a bunch of
@@ -125,8 +126,8 @@ or string comparison, but if you need to specify, you can:
   $people
     ->where( check_fields( 'phone', -is => '012345679', -string );
   
-   $people
-      ->where( check_fields( 'age', -is => '33', -numeric );
+  $people
+    ->where( check_fields( 'age', -is => '33', -numeric );
 
 String comparisons can be made case-insensitive:
 
