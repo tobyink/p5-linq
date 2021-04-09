@@ -76,72 +76,63 @@ sub _build_coderef {
 	};
 } #/ sub _build_coderef
 
-my %templates = (
-	'numeric ==' => '%s == %s',
-	'numeric !=' => '%s != %s',
-	'numeric >'  => '%s >  %s',
-	'numeric >=' => '%s >= %s',
-	'numeric <'  => '%s <  %s',
-	'numeric <=' => '%s <= %s',
-	'string =='  => '%s eq %s',
-	'string !='  => '%s ne %s',
-	'string >'   => '%s gt %s',
-	'string >='  => '%s ge %s',
-	'string <'   => '%s lt %s',
-	'string <='  => '%s le %s',
-	'null =='    => 'defined( %s )',
-);
-
-my $_like_to_regexp = sub {
-	my ( $like, $ci ) = @_;
-	my $re      = '';
-	my %anchors = (
-		start => substr( $like, 0,  1 ) ne '%',
-		end   => substr( $like, -1, 1 ) ne '%',
+{
+	my %makers = (
+		'is'       => '_make_is_check',
+		'in'       => '_make_in_check',
+		'like'     => '_make_like_check',
+		'match'    => '_make_match_check',
 	);
-	my @parts = split qr{(\\*[.%])}, $like;
-	for my $p ( @parts ) {
-		next unless length $p;
-		my $backslash_count =()= $p =~ m{(\\)}g;
-		my $wild_count      =()= $p =~ m{([%.])}g;
-		if ( $wild_count ) {
-			if ( $backslash_count && $backslash_count % 2 ) {
-				my $last = substr( $p, -2, 2, '' );
-				$p =~ s{\\\\}{\\};
-				$re .= quotemeta( $p . substr( $last, -1, 1 ) );
-			}
-			elsif ( $backslash_count ) {
-				my $last = substr( $p, -1, 1, '' );
-				$p =~ s{\\\\}{\\};
-				$re .= quotemeta( $p ) . ( $last eq '%' ? '.*' : '.' );
-			}
-			else {
-				$re .= $p eq '%' ? '.*' : '.';
-			}
-		} #/ if ( $wild_count )
-		else {
-			$p =~ s{\\(.)}{$1}g;
-			$re .= quotemeta( $p );
-		}
-	} #/ for my $p ( @parts )
-	
-	substr( $re, 0, 0, '\A' ) if $anchors{start};
-	$re .= '\z'               if $anchors{end};
-	
-	$ci ? qr/$re/i : qr/$re/;
-};
 
-sub _make_check {
-	my ( $self, $field ) = ( shift, @_ );
-	my $getter = $field->getter;
-	
-	if ( exists $field->params->{is} ) {
-		for ( qw/ like in match / ) {
+	sub _make_check {
+		my ( $self, $field ) = ( shift, @_ );
+		
+		my @found;
+		for my $key ( sort keys %makers ) {
+			push @found, $key if exists $field->params->{$key};
+		}
+		
+		if ( @found > 1 ) {
+			my $params = join q[, ], map "-$_", @found;
 			LINQ::Util::Internal::throw(
 				"CallerError",
-				message => "Cannot use '-is' and '-$_' together",
-			) if $field->params->{$_};
+				message => "Multiple conflicting assertions ($params) found for field '@{[ $field->name ]}'",
+			);
 		}
+		
+		if ( @found == 0 ) {
+			LINQ::Util::Internal::throw(
+				"CallerError",
+				message => "No assertions found for field '@{[ $field->name ]}'",
+			);
+		}
+		
+		my $method = $makers{ $found[0] };
+		return $self->$method( $field );
+	}
+}
+
+{
+	my %templates = (
+		'numeric ==' => '%s == %s',
+		'numeric !=' => '%s != %s',
+		'numeric >'  => '%s >  %s',
+		'numeric >=' => '%s >= %s',
+		'numeric <'  => '%s <  %s',
+		'numeric <=' => '%s <= %s',
+		'string =='  => '%s eq %s',
+		'string !='  => '%s ne %s',
+		'string >'   => '%s gt %s',
+		'string >='  => '%s ge %s',
+		'string <'   => '%s lt %s',
+		'string <='  => '%s le %s',
+		'null =='    => 'defined( %s )',
+	);
+	
+	sub _make_is_check {
+		my ( $self, $field ) = ( shift, @_ );
+		my $getter = $field->getter;
+		
 		my $expected = $field->params->{is};
 		my $cmp      = $field->params->{cmp} || "==";
 		my $type =
@@ -188,49 +179,84 @@ sub _make_check {
 		
 		no warnings qw( uninitialized );
 		return eval "sub { $guts }";
-	} #/ if ( exists $field->params...)
+	}
+}
+
+sub _make_in_check {
+	my ( $self, $field ) = ( shift, @_ );
+	my $getter = $field->getter;
 	
-	if ( exists $field->params->{in} ) {
-		for ( qw/ is cmp numeric string like match / ) {
-			LINQ::Util::Internal::throw(
-				"CallerError",
-				message => "Cannot use '-in' and '-$_' together",
-			) if $field->params->{$_};
-		}
-		
-		my @expected = @{ $field->params->{in} };
-		
-		if ( $field->params->{not} ) {
-			return sub {
-				my $value = $getter->( $_ );
-				for my $expected ( @expected ) {
-					return !!0 if $value eq $expected;
-				}
-				return !!1;
-			};
-		}
-		else {
-			return sub {
-				my $value = $getter->( $_ );
-				for my $expected ( @expected ) {
-					return !!1 if $value eq $expected;
-				}
-				return !!0;
-			};
-		}
-	} #/ if ( exists $field->params...)
+	my @expected = @{ $field->params->{in} };
 	
-	if ( exists $field->params->{like} ) {
-		for ( qw/ is cmp numeric string in match / ) {
-			LINQ::Util::Internal::throw(
-				"CallerError",
-				message => "Cannot use '-like' and '-$_' together",
-			) if $field->params->{$_};
-		}
+	if ( $field->params->{not} ) {
+		return sub {
+			my $value = $getter->( $_ );
+			for my $expected ( @expected ) {
+				return !!0 if $value eq $expected;
+			}
+			return !!1;
+		};
+	}
+	else {
+		return sub {
+			my $value = $getter->( $_ );
+			for my $expected ( @expected ) {
+				return !!1 if $value eq $expected;
+			}
+			return !!0;
+		};
+	}
+}
+
+{
+	my $_like_to_regexp = sub {
+		my ( $like, $ci ) = @_;
+		my $re      = '';
+		my %anchors = (
+			start => substr( $like, 0,  1 ) ne '%',
+			end   => substr( $like, -1, 1 ) ne '%',
+		);
+		my @parts = split qr{(\\*[.%])}, $like;
+		for my $p ( @parts ) {
+			next unless length $p;
+			my $backslash_count =()= $p =~ m{(\\)}g;
+			my $wild_count      =()= $p =~ m{([%.])}g;
+			if ( $wild_count ) {
+				if ( $backslash_count && $backslash_count % 2 ) {
+					my $last = substr( $p, -2, 2, '' );
+					$p =~ s{\\\\}{\\};
+					$re .= quotemeta( $p . substr( $last, -1, 1 ) );
+				}
+				elsif ( $backslash_count ) {
+					my $last = substr( $p, -1, 1, '' );
+					$p =~ s{\\\\}{\\};
+					$re .= quotemeta( $p ) . ( $last eq '%' ? '.*' : '.' );
+				}
+				else {
+					$re .= $p eq '%' ? '.*' : '.';
+				}
+			} #/ if ( $wild_count )
+			else {
+				$p =~ s{\\(.)}{$1}g;
+				$re .= quotemeta( $p );
+			}
+		} #/ for my $p ( @parts )
+		
+		substr( $re, 0, 0, '\A' ) if $anchors{start};
+		$re .= '\z'               if $anchors{end};
+		
+		$ci ? qr/$re/i : qr/$re/;
+	};
+
+	sub _make_like_check {
+		my ( $self, $field ) = ( shift, @_ );
+		my $getter = $field->getter;
+		
 		my $match = $_like_to_regexp->(
 			$field->params->{like},
 			$field->params->{nocase},
 		);
+		
 		if ( $field->params->{not} ) {
 			return sub {
 				my $value = $getter->( $_ );
@@ -243,36 +269,30 @@ sub _make_check {
 				$value =~ $match;
 			};
 		}
-	} #/ if ( exists $field->params...)
+	}
+}
+
+sub _make_match_check {
+	my ( $self, $field ) = ( shift, @_ );
+	my $getter = $field->getter;
 	
-	if ( exists $field->params->{match} ) {
-		for ( qw/ is cmp numeric string in like / ) {
-			LINQ::Util::Internal::throw(
-				"CallerError",
-				message => "Cannot use '-match' and '-$_' together",
-			) if $field->params->{$_};
-		}
-		my $match = $field->params->{match};
-		require match::simple;
-		if ( $field->params->{not} ) {
-			return sub {
-				my $value = $getter->( $_ );
-				not match::simple::match( $value, $match );
-			};
-		}
-		else {
-			return sub {
-				my $value = $getter->( $_ );
-				match::simple::match( $value, $match );
-			};
-		}
-	} #/ if ( exists $field->params...)
+	my $match = $field->params->{match};
 	
-	LINQ::Util::Internal::throw(
-		"CallerError",
-		message => "Expected '-is', '-in', or '-like'",
-	) if $field->params->{$_};
-} #/ sub _make_check
+	require match::simple;
+	
+	if ( $field->params->{not} ) {
+		return sub {
+			my $value = $getter->( $_ );
+			not match::simple::match( $value, $match );
+		};
+	}
+	else {
+		return sub {
+			my $value = $getter->( $_ );
+			match::simple::match( $value, $match );
+		};
+	}
+}
 
 sub not {
 	my ( $self ) = ( shift );
