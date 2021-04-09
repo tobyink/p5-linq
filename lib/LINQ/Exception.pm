@@ -186,6 +186,22 @@ There is a class method C<throw> which instantiates a new object and dies.
 
 LINQ::Exception is never directly thrown by LINQ, but subclasses of it are.
 
+=begin trustme
+
+=item throw
+
+=item message
+
+=item file
+
+=item line
+
+=item package
+
+=item to_string
+
+=end trustme
+
 =head2 LINQ::Exception::Unimplemented
 
 A subclass of LINQ::Exception thrown when you call a method or feature which
@@ -207,6 +223,9 @@ parameter, but is given a string.
 A subclass of LINQ::Exception thrown when a method you've called cannot be
 fulfilled by the collection you've called it on. For example, you've asked to
 fetch the third item in a collection containing only two items.
+
+The exception has a C<collection> attribute which returns the collection which
+generated the error.
 
 =head2 LINQ::Exception::NotFound
 
