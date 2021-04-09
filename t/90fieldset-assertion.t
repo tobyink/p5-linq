@@ -127,6 +127,23 @@ is(
 	'->or',
 );
 
+my $collection2 = LINQ(
+	[
+		object( { name => 'Alice', xyz => 'ABC', min => 1,  max => 99, val =>  4 } ),
+		object( { name => 'Bob',   xyz => 'DEF', min => 18, max => 49, val => 20 } ),
+		object( { name => 'Carol', xyz => 'DEF', min => 75, max => 75, val => 33 } ),
+	]
+);
+
+is(
+	$collection2->where( check_fields(
+		'val', -cmp => '>=', -to => 'min',
+		'val', -cmp => '<=', -to => 'max',
+	) )->select( sub { $_->name } )->aggregate( sub { $_[0] . $_[1] } ),
+	'AliceBob',
+	'-to, -cmp',
+);
+
 use Scalar::Util qw( refaddr );
 
 my $x = check_fields( 'name', -is => 'Alice' );

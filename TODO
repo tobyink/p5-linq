@@ -3,5 +3,3 @@ Classes (likely separate distributions):
 - LINQ::LibXML
 - LINQ::Path (Path::Tiny/Path::Iterator::Rule)
 
-Allow two fields to be compared to each other:
-- check_fields( 'name', -cmp => '==', -cmpto => 'fullname' );

@@ -166,6 +166,20 @@ conditions.
       'age',  -nix, -is => 33,
     ) );
 
+You can compare one field to another field using C<< -to >>:
+
+  # Says all the values which are between the min and max.
+  LINQ(
+    { min => 10, max => 100, value => 50 },
+    { min => 10, max => 100, value =>  5 },
+    { min => 10, max =>  20, value => 50 },
+  )->where( check_fields(
+    'value', -cmp => '>=', -to => 'min',
+    'value', -cmp => '<=', -to => 'max',
+  ) )->foreach( sub {
+    say $_->value;
+  } );
+
 You can invert a whole C<< check_fields() >> using the C<< not >> method:
 
   my $where_not_bob = check_fields( 'name', -is => 'Bob' )->not;

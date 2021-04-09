@@ -42,6 +42,7 @@ sub _known_parameter_names {
 		'in'      => 1,
 		'like'    => 1,
 		'match'   => 1,
+		'to'      => 1,
 		'cmp'     => 1,
 		'numeric' => 0,
 		'string'  => 0,
@@ -80,6 +81,7 @@ sub _build_coderef {
 	my %makers = (
 		'is'       => '_make_is_check',
 		'in'       => '_make_in_check',
+		'to'       => '_make_to_check',
 		'like'     => '_make_like_check',
 		'match'    => '_make_match_check',
 	);
@@ -170,6 +172,44 @@ sub _build_coderef {
 					require B;
 					B::perlstring( $expected );
 				},
+			);
+		} #/ else [ if ( $type eq 'null' )]
+		
+		if ( $field->params->{nix} ) {
+			$guts = "not( $guts )";
+		}
+		
+		no warnings qw( uninitialized );
+		return eval "sub { $guts }";
+	}
+	
+	sub _make_to_check {
+		my ( $self, $field ) = ( shift, @_ );
+		my $getter = $field->getter;
+		
+		my $other    = 'LINQ::Field'->new( value => $field->params->{to} )->getter;
+		my $cmp      = $field->params->{cmp} || "==";
+		my $type     = $field->params->{numeric} ? 'numeric' : 'string';
+		my $template = $templates{"$type $cmp"}
+			or LINQ::Util::Internal::throw(
+				"CallerError",
+				message => "Unexpected comparator '$cmp' for type '$type'",
+			);
+			
+		my $guts;
+		if ( $field->params->{nocase} ) {
+			my $fold = ( $] > 5.016 ) ? 'CORE::fc' : 'lc';
+			$guts = sprintf(
+				$template,
+				"$fold( \$getter->( \$_ ) )",
+				"$fold( \$other->( \$_ ) )",
+			);
+		} #/ elsif ( $field->params->{...})
+		else {
+			$guts = sprintf(
+				$template,
+				'$getter->( $_ )',
+				'$other->( $_ )',
 			);
 		} #/ else [ if ( $type eq 'null' )]
 		
@@ -472,6 +512,7 @@ Constructs a fieldset from a list of fields like:
 
 Allowed parameters are:
 C<< -is >> (followed by a value),
+C<< -to >> (followed by a value),
 C<< -in >> (followed by a value),
 C<< -like >> (followed by a value),
 C<< -match >> (followed by a value),
