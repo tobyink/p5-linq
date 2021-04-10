@@ -136,13 +136,27 @@ sub to_list {
 	# so remove all the magic and act like a
 	# plain old arrayref.
 	#
-	if ( tied( $self ) ) {
+	if ( tied( @$self ) ) {
+		no warnings;
 		untie( @$self );
 		@$self = @list;
 	}
 	
 	@list;
 } #/ sub to_list
+
+
+sub to_array {
+	my $self = shift;
+	
+	if ( my $guts = $self->_guts ) {
+		tie ( my @tied, 'LINQ::Iterator::_LazyList', undef );
+		@{ tied( @tied ) } = @$guts;
+		return \@tied;
+	}
+	
+	$self->LINQ::Collection::to_array( @_ );
+}
 
 sub element_at {
 	my $self = shift;
@@ -208,6 +222,8 @@ LINQ::Iterator supports all the methods defined in L<LINQ::Collection>.
 =item element_at
 
 =item to_list
+
+=item to_array
 
 =item to_iterator
 

@@ -43,4 +43,23 @@ is(
 	'Blessed exception'
 );
 
+my $c3 = LINQ( sub { 4 } );
+is(
+	$c3->take(5)->count,
+	5,
+	'Taking five elements from an infinite iterator',
+);
+ok(
+	$c3->_guts->current_extension > 4,
+	'$collection->_guts->current_extension as expected',
+);
+ok(
+	$c3->_guts->current_extension <= 6,
+	'$collection->_guts->current_extension as expected',
+);
+ok(
+	! $c3->_guts->is_fully_extended,
+	'$collection->_guts->is_fully_extended as expected',
+);
+
 done_testing;

@@ -693,7 +693,7 @@ sub zip {
 		sub {
 			my @r1 = $iter1->();
 			my @r2 = $iter2->();
-			return LINQ::END unless @r1 && @r2;
+			return LINQ::END() unless @r1 && @r2;
 			$map->( $r1[0], $r2[0] );
 		}
 	);
