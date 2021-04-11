@@ -9,7 +9,7 @@ Test the C<of_type> method of L<LINQ::Iterator>.
 
 =head1 DEPENDENCIES
 
-This test requires L<Types::Standard>. It will be skipped otherwise.
+This test requires L<Type::Nano>. It will be skipped otherwise.
 
 =head1 AUTHOR
 
@@ -17,7 +17,7 @@ Toby Inkster E<lt>tobyink@cpan.orgE<gt>.
 
 =head1 COPYRIGHT AND LICENCE
 
-This software is copyright (c) 2014 by Toby Inkster.
+This software is copyright (c) 2021 by Toby Inkster.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
@@ -26,9 +26,10 @@ the same terms as the Perl 5 programming language system itself.
 
 BEGIN { $LINQ::FORCE_ITERATOR = 1 }
 
-use Test::Modern -requires => { 'Types::Standard' => 0 };
+use Test::Modern -requires => { 'Type::Nano' => 0 };
 use LINQ qw( LINQ );
-use Types::Standard -types;
+
+use Type::Nano qw/ Int Num /;
 
 my $collection = LINQ [
 	"Aardvark",
@@ -48,12 +49,10 @@ is_deeply(
 	'simple of_type',
 );
 
-my $Rounded = Int->plus_coercions( Num, sub { int( $_ ) } );
-
 is_deeply(
-	$collection->of_type( $Rounded )->to_array,
-	[qw/ 6 9 3 /],
-	'of_type plus coercions',
+	$collection->of_type( Num )->to_array,
+	[qw/ 6 9 3.14 /],
+	'another of_type',
 );
 
 my $e = exception { $collection->of_type( [] )->to_array };

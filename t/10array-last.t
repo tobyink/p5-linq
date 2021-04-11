@@ -25,11 +25,20 @@ use LINQ qw( LINQ );
 use DisneyData qw( people );
 
 object_ok(
-	people->last( sub { not $_->name =~ /a$/ } ),
+	people->last( sub { $_->name =~ /a$/ } ),
 	'$rapunzel',
 	isa  => [qw( Person )],
 	can  => [qw( name )],
-	more => sub { is( shift->name, 'Rapunzel' ) },
+	more => sub { is( shift->name, 'Sophia' ) },
+);
+
+object_ok(
+	people->last, '$people->last',
+	isa   => 'Person',
+	more  => sub {
+		my $this = shift;
+		is( $this->name, 'Rapunzel' );
+	},
 );
 
 object_ok(

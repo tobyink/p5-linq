@@ -121,6 +121,12 @@ is(
 );
 
 is(
+	fields( "foo", "bar", -as => "barr", "baz" )->_sql_selection( sub { uc($_[0]) } ),
+	'FOO, BAR AS BARR, BAZ',
+	'Simple SQL generation with custom quoter',
+);
+
+is(
 	fields( "foo", "bar", -as => "barr", "baz", "*" )->_sql_selection,
 	undef,
 	'Simple SQL generation with asterisk',
@@ -130,6 +136,132 @@ is(
 	fields( "foo", sub { }, "bar", -as => "barr", "baz" )->_sql_selection,
 	undef,
 	'Simple SQL generation with coderef',
+);
+
+my $selector = fields(
+	'~yay~',
+	sub { $_->{'monkee'} },
+);
+
+object_ok(
+	LINQ( [
+		{ '~yay~' => 42, 'monkee' => 69 },
+	] )->select( $selector )->single( sub { 1 } ),
+	'$weirdo',
+	more => sub {
+		my $weirdo = shift;
+		is( $weirdo->_1, 42 );
+		is( $weirdo->_2, 69 );
+	},
+);
+
+{
+	my $thung = fields( '*', 'foo', 'bar', -as => 'baz' );
+	
+	is_deeply(
+		{%{ $thung }},
+		{%{ 'LINQ::FieldSet::Selection'->new( {
+			'fields' => [
+				'LINQ::Field'->new( {
+					index  => 1,
+					name   => 'foo',
+					value  => 'foo',
+					params => {},
+				} ),
+				'LINQ::Field'->new( {
+					index  => 2,
+					name   => 'baz',
+					value  => 'bar',
+					params => { as => 'baz' },
+				} ),
+			],
+			'seen_asterisk' => !!1,
+		} ) }},
+		'FieldSet constructor'
+	);
+	
+	is(
+		$thung->target_class,
+		$thung->target_class,
+		'->target_class',
+	);
+	
+	my $fh = $thung->fields_hash;
+	
+	is_deeply(
+		$fh,
+		{
+			foo => 'LINQ::Field'->new( {
+				index  => 1,
+				name   => 'foo',
+				value  => 'foo',
+				params => {},
+			} ),
+			baz => 'LINQ::Field'->new( {
+				index  => 2,
+				name   => 'baz',
+				value  => 'bar',
+				params => { as => 'baz' },
+			} ),			
+		},
+		'->fields_hash'
+	);
+	
+	use Scalar::Util 'refaddr';
+	is(
+		refaddr( $fh ),
+		refaddr( $thung->fields_hash ),
+		'->fields_hash again'
+	);
+	
+	# Weird stuff for coverage...
+	
+	{
+		package Silly::Class;
+		our @ISA = 'LINQ::FieldSet::Selection';
+		sub _build_fields_hash  { 0 }
+		sub _build_coderef      { 0 }
+		sub _build_target_class { 0 }
+	}
+	$thung = fields( '*', 'foo', 'bar', -as => 'baz' );
+	bless( $thung, 'Silly::Class' );
+	is( $thung->fields_hash,  0, 'Silly::Class->fields_hash' );
+	is( $thung->fields_hash,  0, 'Silly::Class->fields_hash again' );
+	is( $thung->coderef,      0, 'Silly::Class->coderef_hash' );
+	is( $thung->coderef,      0, 'Silly::Class->coderef again' );
+	is( $thung->target_class, 0, 'Silly::Class->target_class' );
+	is( $thung->target_class, 0, 'Silly::Class->target_class again' );
+	
+	{
+		package Silly::Class2;
+		our @ISA = 'LINQ::Field';
+		sub _build_getter { 0 }
+	}
+	$thung = fields( '*', 'foo', 'bar', -as => 'baz' );
+	bless( $_, 'Silly::Class2' ) for @{ $thung->fields };
+	is( $thung->fields->[0]->getter, 0, 'Silly::Class2' );
+	is( $thung->fields->[0]->getter, 0, 'Silly::Class2 again' );
+	
+	{
+		package Silly::Class3;
+		sub foo { 66 }
+		sub bar { 99 }
+	}
+	$thung = fields( 'foo', 'bar', -as => 'baz' );
+	is_deeply(
+		{%{ LINQ( [ bless [], 'Silly::Class3'  ] )->select( $thung )->first }},
+		{ foo => 66, baz => 99 },
+		'Silly::Class3'
+	);
+}
+
+object_ok(
+	exception { fields( 'foo', -boop ) }, '$e',
+	isa   => 'LINQ::Exception::CallerError',
+	more  => sub {
+		my $e = shift;
+		like( $e->message, qr/Unknown field parameter/ );
+	},
 );
 
 done_testing;

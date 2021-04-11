@@ -14,6 +14,9 @@
 	:runtime-requirement    [ :on "Role::Tiny 1.003003"^^:CpanId ];
 	:test-requirement       [ :on "Test::Modern 0.008"^^:CpanId ];
 	:test-recommendation    [ :on "Types::Standard"^^:CpanId ];
+	:test-recommendation    [ :on "Type::Nano"^^:CpanId ];
+	:test-suggestion        [ :on "MooseX::Types"^^:CpanId ];
+	:test-suggestion        [ :on "Specio"^^:CpanId ];
 	:develop-suggestion     [ :on "Dist::Inkt::Profile::TOBYINK"^^:CpanId ];
 	.
 

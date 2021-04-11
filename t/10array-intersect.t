@@ -34,4 +34,10 @@ is_deeply(
 	'simple intersect',
 );
 
+is_deeply(
+	LINQ( [ 1, 2, 3 ] )->intersect( LINQ( [ 1, 3, 5 ] ) )->to_array,
+	[ 1, 3 ],
+	'simple intersect with no callable',
+);
+
 done_testing;

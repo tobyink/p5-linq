@@ -1,4 +1,3 @@
-
 =pod
 
 =encoding utf-8
@@ -22,6 +21,35 @@ the same terms as the Perl 5 programming language system itself.
 
 use Test::Modern;
 use LINQ qw( LINQ );
+
+my $d = LINQ [ 8, 4, 5, 12 ];
+
+is_deeply(
+	[ $d->order_by->to_list ],
+	[ 4, 5, 8, 12 ],
+	'Defaults to numeric sort',
+);
+
+is_deeply(
+	[ $d->order_by( -numeric )->to_list ],
+	[ 4, 5, 8, 12 ],
+	'Explicit numeric sort',
+);
+
+object_ok(
+	exception { $d->order_by( -boop )->to_list }, '$e',
+	isa   => 'LINQ::Exception::CallerError',
+	more  => sub {
+		my $e = shift;
+		like( $e->message, qr/Expected '-numeric' or '-string'; got '-boop'/ );
+	},
+);
+
+is_deeply(
+	[ $d->order_by( -string )->to_list ],
+	[ 12, 4, 5, 8 ],
+	'Explicit string sort',
+);
 
 my $c = LINQ [
 	{ foo => 9 },

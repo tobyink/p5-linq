@@ -84,6 +84,8 @@ if ( $] < 5.010000 ) {
 			
 			# Crazy optimized loop to find and handle LINQ::END
 			# within @got
+			# uncoverable condition count:1
+			# uncoverable condition count:5
 			push( @$cache, shift @got )
 				and ref( $got = $cache->[-1] )
 				and $got == LINQ::END()

@@ -43,4 +43,13 @@ object_ok(
 	can => [qw( message collection )],
 );
 
+object_ok(
+	people->first, '$people->first',
+	isa   => 'Person',
+	more  => sub {
+		my $this = shift;
+		is( $this->name, 'Anna' );
+	},
+);
+
 done_testing;

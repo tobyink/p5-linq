@@ -61,4 +61,11 @@ is(
 	'Non-valid type constraint is a caller error',
 );
 
+my $e2 = exception { $collection->of_type( bless [], 'Dummy' )->to_array };
+is(
+	ref( $e2 ),
+	'LINQ::Exception::CallerError',
+	'Non-valid type constraint is a caller error',
+);
+
 done_testing;

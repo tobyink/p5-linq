@@ -67,6 +67,7 @@ sub _sql_selection {
 		my $orig_name = $field->value;
 		my $aliased   = $field->name;
 		return if ref( $orig_name );
+		# uncoverable branch true
 		return if !defined( $aliased );
 		
 		if ( $aliased eq $orig_name ) {

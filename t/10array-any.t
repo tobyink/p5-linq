@@ -39,4 +39,9 @@ ok(
 	'any returning false on empty collection without even needing to run check',
 );
 
+ok(
+	LINQ( [0] )->any,
+	'any with no callable returns true if the collection contains anything', 
+);
+
 done_testing;

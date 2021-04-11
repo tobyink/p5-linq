@@ -128,7 +128,7 @@ sub _build_coderef {
 		'string >='  => '%s ge %s',
 		'string <'   => '%s lt %s',
 		'string <='  => '%s le %s',
-		'null =='    => 'defined( %s )',
+		'null =='    => '! defined( %s )',
 	);
 	
 	sub _make_is_check {
@@ -142,7 +142,8 @@ sub _build_coderef {
 			: $field->params->{string}            ? 'string'
 			: !defined( $expected )               ? 'null'
 			: $expected =~ /^[0-9]+(?:\.[0-9]+)$/ ? 'numeric'
-			:                                       'string';
+			: !ref( $expected )                   ? 'string'
+			: 'numeric';
 		my $template = $templates{"$type $cmp"}
 			or LINQ::Util::Internal::throw(
 			"CallerError",
@@ -176,7 +177,7 @@ sub _build_coderef {
 		} #/ else [ if ( $type eq 'null' )]
 		
 		if ( $field->params->{nix} ) {
-			$guts = "not( $guts )";
+			$guts = "!( $guts )";
 		}
 		
 		no warnings qw( uninitialized );
@@ -189,13 +190,13 @@ sub _build_coderef {
 		
 		my $other    = 'LINQ::Field'->new( value => $field->params->{to} )->getter;
 		my $cmp      = $field->params->{cmp} || "==";
-		my $type     = $field->params->{numeric} ? 'numeric' : 'string';
+		my $type     = $field->params->{string} ? 'string' : 'numeric';
 		my $template = $templates{"$type $cmp"}
 			or LINQ::Util::Internal::throw(
 				"CallerError",
 				message => "Unexpected comparator '$cmp' for type '$type'",
 			);
-			
+		
 		my $guts;
 		if ( $field->params->{nocase} ) {
 			my $fold = ( $] > 5.016 ) ? 'CORE::fc' : 'lc';
@@ -214,7 +215,7 @@ sub _build_coderef {
 		} #/ else [ if ( $type eq 'null' )]
 		
 		if ( $field->params->{nix} ) {
-			$guts = "not( $guts )";
+			$guts = "!( $guts )";
 		}
 		
 		no warnings qw( uninitialized );

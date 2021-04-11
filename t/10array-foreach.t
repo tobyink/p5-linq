@@ -36,6 +36,24 @@ $collection->foreach(
 
 is( $output, '123456789' );
 
+my $e1 = exception {
+	$collection->foreach( sub { die "Baddie" } );
+};
+like(
+	$e1,
+	qr/Baddie/,
+	'Can throw exceptions in foreach.'
+);
+
+my $e2 = exception {
+	$collection->foreach( sub { die bless [], "Baddie" } );
+};
+is(
+	ref( $e2 ),
+	'Baddie',
+	'Can throw blessed exceptions in foreach.'
+);
+
 my $e = exception { LINQ::LAST };
 is(
 	ref( $e ),

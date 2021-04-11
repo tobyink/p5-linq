@@ -41,6 +41,7 @@ sub select {
 	require LINQ;
 	LINQ::LINQ(
 		sub {
+			# uncoverable branch true
 			return LINQ::END() if $stopped;
 			my @got = $iter->();
 			if ( @got ) {
@@ -100,7 +101,7 @@ sub select_many {
 					}
 					else {
 						$end = 1;
-						return LINQ::END();
+						redo BODY;
 					}
 				} #/ if ( not $inner )
 				my @got = $inner->();
@@ -255,6 +256,7 @@ sub take_while {
 	require LINQ;
 	LINQ::LINQ(
 		sub {
+			# uncoverable branch true
 			return LINQ::END() if $stopped;
 			my @got = $iter->();
 			if ( !@got or !$filter->( $_ = $got[0] ) ) {
@@ -323,9 +325,12 @@ sub concat {
 } #/ sub concat
 
 sub order_by {
-	my $self   = shift;
-	my $hint   = ref( $_[0] ) ? -numeric : shift( @_ );
-	my $keygen = @_           ? LINQ::Util::Internal::assert_code( @_ ) : undef;
+	my $self = shift;
+	my ( $hint, $keygen ) = ( -numeric, undef );
+	if ( @_ ) {
+		$hint   = ref( $_[0] ) ? -numeric : shift( @_ );
+		$keygen = @_ ? LINQ::Util::Internal::assert_code( @_ ) : undef;
+	}
 	
 	if ( not $keygen ) {
 		if ( $hint eq -string ) {
@@ -498,6 +503,7 @@ my $_with_default = sub {
 	my $default = pop( @args );
 	
 	my $return;
+	local $@;
 	eval { $return = $self->$method( @args ); 1 } or do {
 		my $e = $@;    # catch
 		
@@ -521,7 +527,7 @@ my $_with_default = sub {
 
 sub first {
 	my $self  = shift;
-	my $found = $self->where( @_ );
+	my $found = @_ ? $self->where( @_ ) : $self;
 	return $found->element_at( 0 ) if $found->count > 0;
 	LINQ::Util::Internal::throw( 'NotFound', collection => $self );
 }
@@ -532,7 +538,7 @@ sub first_or_default {
 
 sub last {
 	my $self  = shift;
-	my $found = $self->where( @_ );
+	my $found = @_ ? $self->where( @_ ) : $self;
 	return $found->element_at( -1 ) if $found->count > 0;
 	LINQ::Util::Internal::throw( 'NotFound', collection => $self );
 }
@@ -543,7 +549,7 @@ sub last_or_default {
 
 sub single {
 	my $self  = shift;
-	my $found = $self->where( @_ );
+	my $found = @_ ? $self->where( @_ ) : $self;
 	return $found->element_at( 0 ) if $found->count == 1;
 	$found->count == 0
 		? LINQ::Util::Internal::throw( 'NotFound', collection => $self )

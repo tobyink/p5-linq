@@ -33,6 +33,14 @@ object_ok(
 );
 
 object_ok(
+	people->where( sub { $_->id == 2 } )->single,
+	'$elsa',
+	isa  => [qw( Person )],
+	can  => [qw( name )],
+	more => sub { is( shift->name, 'Elsa' ) },
+);
+
+object_ok(
 	exception {
 		people->single( sub { $_->id < 0 } )
 	},

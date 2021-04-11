@@ -36,4 +36,10 @@ is_deeply(
 	'simple except',
 );
 
+is_deeply(
+	LINQ( [ 1, 2, 3 ] )->except( LINQ( [ 1, 3, 5 ] ) )->to_array,
+	[ 2 ],
+	'simple except with no callable',
+);
+
 done_testing;

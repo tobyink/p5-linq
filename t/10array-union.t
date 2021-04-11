@@ -34,4 +34,10 @@ is_deeply(
 	'simple union',
 );
 
+is_deeply(
+	LINQ( [ 1, 2, 3 ] )->union( LINQ( [ 1, 3, 5 ] ) )->to_array,
+	[ 1, 2, 3, 5 ],
+	'simple union with no callable',
+);
+
 done_testing;
