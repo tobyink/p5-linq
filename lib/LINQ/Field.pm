@@ -5,7 +5,7 @@ use warnings;
 package LINQ::Field;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_008';
+our $VERSION   = '0.000_009';
 
 use Class::Tiny qw( index name value params );
 

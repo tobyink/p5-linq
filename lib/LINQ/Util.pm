@@ -5,7 +5,7 @@ use warnings;
 package LINQ::Util;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_008';
+our $VERSION   = '0.000_009';
 
 use Exporter::Shiny qw( fields check_fields );
 

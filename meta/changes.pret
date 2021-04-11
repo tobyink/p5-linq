@@ -75,3 +75,11 @@
 		item "Allow `-nocase` and `-in` to be used together in `check_fields()`."^^Change;
 		item "Change `-not` to `-nix` in `check_fields()`."^^Change;
 	].
+
+`LINQ 0.000_009 cpan:TOBYINK`
+	issued  2021-04-11;
+	changeset [
+		item "Almost 100% test coverage."^^Tests;
+		item "`check_fields()` now has a `-to` parameter."^^Addition;
+		item "LINQ::Iterator's `to_array` method now returns an unblessed copy of the blessed tied arrayref that backs the collection."^^Change;
+	].

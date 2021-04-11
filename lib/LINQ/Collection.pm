@@ -5,7 +5,7 @@ use warnings;
 package LINQ::Collection;
 
 our $AUTHORITY = 'cpan:TOBYINK';
-our $VERSION   = '0.000_008';
+our $VERSION   = '0.000_009';
 
 use Role::Tiny;
 use LINQ::Util::Internal ();
