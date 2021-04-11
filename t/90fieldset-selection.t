@@ -202,7 +202,7 @@ object_ok(
 				name   => 'baz',
 				value  => 'bar',
 				params => { as => 'baz' },
-			} ),			
+			} ),
 		},
 		'->fields_hash'
 	);

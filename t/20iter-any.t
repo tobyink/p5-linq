@@ -43,7 +43,7 @@ ok(
 
 ok(
 	LINQ( [0] )->any,
-	'any with no callable returns true if the collection contains anything', 
+	'any with no callable returns true if the collection contains anything',
 );
 
 done_testing;
