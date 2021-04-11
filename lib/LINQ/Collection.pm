@@ -503,7 +503,6 @@ my $_with_default = sub {
 	my $default = pop( @args );
 	
 	my $return;
-	local $@;
 	eval { $return = $self->$method( @args ); 1 } or do {
 		my $e = $@;    # catch
 		
@@ -720,7 +719,6 @@ sub foreach {
 	my $self = shift;
 	my $code = LINQ::Util::Internal::assert_code( @_ );
 	
-	local $@;
 	my $ok = eval {
 		local $LINQ::IN_LOOP = 1;
 		$self->where( sub { $code->( $_ ); 0 } )->to_list;
