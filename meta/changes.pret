@@ -83,3 +83,9 @@
 		item "`check_fields()` now has a `-to` parameter."^^Addition;
 		item "LINQ::Iterator's `to_array` method now returns an unblessed copy of the blessed tied arrayref that backs the collection."^^Change;
 	].
+
+`LINQ 0.001 cpan:TOBYINK`
+	issued  2021-04-11;
+	changeset [
+		item "Bump version to 0.001."^^Packaging;
+	].
