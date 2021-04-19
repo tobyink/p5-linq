@@ -27,10 +27,13 @@ use parent qw( LINQ::FieldSet );
 use LINQ::Util::Internal ();
 
 use overload (
-	q[&{}] => 'coderef',
-	q[|]   => 'or',
-	q[&]   => 'and',
-	q[~]   => 'not',
+	'fallback' => !!1,
+	q[bool]    => sub { !! 1 },
+	q[""]      => 'to_string',
+	q[&{}]     => 'coderef',
+	q[|]       => 'or',
+	q[&]       => 'and',
+	q[~]       => 'not',
 );
 
 sub _known_parameter_names {
@@ -357,6 +360,11 @@ sub or {
 		left  => $self,
 		right => $other,
 	);
+}
+
+sub to_string {
+	my ( $self ) = ( shift );
+	sprintf 'check_fields(%s)', join q[, ], map $_->name, @{ $self->fields }; 
 }
 
 package LINQ::FieldSet::Assertion::Combination;
