@@ -562,6 +562,10 @@ assertion.
 
 Gets a coderef for this assertion; the coderef operates on C<< $_ >>.
 
+=item C<to_string>
+
+Basic string representation of the fieldset.
+
 =back
 
 The LINQ::FieldSet::Assertion::{AND,OR,NOT} classes are lightweight classes
@@ -572,6 +576,7 @@ from it.
 =head1 OVERLOADING
 
 This class overloads
+C<< "" >> to call the C<< to_string >> method;
 C<< & >> to call the C<< and >> method;
 C<< | >> to call the C<< or >> method;
 C<< ~ >> to call the C<< not >> method; and

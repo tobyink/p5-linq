@@ -2,7 +2,7 @@ use 5.006;
 use strict;
 use warnings;
 
-package LINQ::FieldSet::Selection;
+package LINQ::FieldSet::Single;
 
 our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.001';
@@ -17,24 +17,23 @@ use overload (
 	q[&{}]     => 'coderef',
 );
 
-sub _known_parameter_names {
-	my ( $self ) = ( shift );
+sub new {
+	my $class = shift;
+	my $field = shift;
+	my $self  = $class->SUPER::new( $field );
 	
-	return (
-		$self->SUPER::_known_parameter_names,
-		'as' => 1,
-	);
-}
-
-sub target_class {
-	my ( $self ) = ( shift );
-	$self->{target_class} ||= $self->_build_target_class;
-}
-
-sub _build_target_class {
-	my ( $self ) = ( shift );
-	require Object::Adhoc;
-	return Object::Adhoc::make_class( [ keys %{ $self->fields_hash } ] );
+	if ( wantarray ) {
+		return ( $self, @_ );
+	}
+	
+	if ( @_ ) {
+		LINQ::Util::Internal::throw(
+			'CallerError',
+			'message' => 'Unexpected extra parameters; single field name expected',
+		);
+	}
+	
+	return $self;
 }
 
 sub coderef {
@@ -43,25 +42,14 @@ sub coderef {
 }
 
 sub _build_coderef {
-	my ( $self ) = ( shift );
-	my @fields   = @{ $self->fields };
-	my $bless    = $self->target_class;
-	my $asterisk = $self->seen_asterisk;
-	return sub {
-		my %output = ();
-		if ( $asterisk ) {
-			%output = %$_;
-		}
-		for my $field ( @fields ) {
-			$output{ $field->name } = $field->getter->( $_ );
-		}
-		$asterisk ? Object::Adhoc::object( \%output ) : bless( \%output, $bless );
-	};
-} #/ sub _build_coderef
+	my ( $self )  = ( shift );
+	my ( $field ) = @{ $self->fields };
+	return $field->getter;
+}
 
 sub to_string {
 	my ( $self ) = ( shift );
-	sprintf 'fields(%s)', join q[, ], map $_->name, @{ $self->fields }; 
+	sprintf 'field(%s)', join q[, ], map $_->name, @{ $self->fields }; 
 }
 
 1;
@@ -74,41 +62,37 @@ __END__
 
 =head1 NAME
 
-LINQ::FieldSet::Selection - represents an SQL-SELECT-like transformation
+LINQ::FieldSet::Single - similar to LINQ::FieldSet::Selection, but only selects one field
 
 =head1 DESCRIPTION
 
-LINQ::FieldSet::Selection is a subclass of L<LINQ::FieldSet>.
+LINQ::FieldSet::Single is a subclass of L<LINQ::FieldSet>.
 
 This is used internally by LINQ and you probably don't need to know about it
 unless you're writing very specific extensions for LINQ. The end user
-interface is the C<fields> function in L<LINQ::Util>.
+interface is the C<field> function in L<LINQ::Util>.
 
 =head1 CONSTRUCTOR
 
 =over
 
-=item C<< new( ARGSLIST ) >>
+=item C<< new( NAME, EXTRAARGS ) >>
 
-Constructs a fieldset from a list of fields like:
+Constructs a fieldset like:
 
-  'LINQ::FieldSet::Selection'->new(
-    'field1', -param1 => 'value1', -param2,
-    'field2', -param1 => 'value2',
-  );
+  'LINQ::FieldSet::Single'->new( 'name', @stuff );
 
-Allowed parameters are:
-C<< -as >> (followed by a value).
+If called in scalar context, and C<< @stuff >> isn't the empty list, then
+will throw an exception.
+
+If called in list context, will return the newly constructed object followed
+by unadulterated C<< @stuff >>.
 
 =back
 
 =head1 METHODS
 
 =over
-
-=item C<target_class>
-
-The class data selected by this selection will be blessed into. 
 
 =item C<coderef>
 
