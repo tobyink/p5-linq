@@ -89,3 +89,11 @@
 	changeset [
 		item "Bump version to 0.001."^^Packaging;
 	].
+
+`LINQ 0.002 cpan:TOBYINK`
+	issued  2021-04-19;
+	changeset [
+		item "Add `field()` to LINQ::Util, and a LINQ::FieldSet::Single class."^^Addition;
+		item "LINQ::FieldSet::Single, LINQ::FieldSet::Selection, and LINQ::FieldSet::Assertion all now overload stringification and have a `to_string()` method."^^Addition;
+		item "LINQ::FieldSet::Single, LINQ::FieldSet::Selection, and LINQ::FieldSet::Assertion all overload boolification to return true, and set fallback=>true for overloading."^^Addition;
+	].
