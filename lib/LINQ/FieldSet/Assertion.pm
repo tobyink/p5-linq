@@ -364,7 +364,7 @@ sub or {
 
 sub to_string {
 	my ( $self ) = ( shift );
-	sprintf 'check_fields(%s)', join q[, ], map $_->name, @{ $self->fields }; 
+	sprintf 'check_fields(%s)', join q[, ], map $_->name, @{ $self->fields };
 }
 
 package LINQ::FieldSet::Assertion::Combination;

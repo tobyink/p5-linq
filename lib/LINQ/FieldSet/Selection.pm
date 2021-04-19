@@ -61,7 +61,7 @@ sub _build_coderef {
 
 sub to_string {
 	my ( $self ) = ( shift );
-	sprintf 'fields(%s)', join q[, ], map $_->name, @{ $self->fields }; 
+	sprintf 'fields(%s)', join q[, ], map $_->name, @{ $self->fields };
 }
 
 1;
