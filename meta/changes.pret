@@ -97,3 +97,9 @@
 		item "LINQ::FieldSet::Single, LINQ::FieldSet::Selection, and LINQ::FieldSet::Assertion all now overload stringification and have a `to_string()` method."^^Addition;
 		item "LINQ::FieldSet::Single, LINQ::FieldSet::Selection, and LINQ::FieldSet::Assertion all overload boolification to return true, and set fallback=>true for overloading."^^Addition;
 	].
+
+`LINQ 0.003 cpan:TOBYINK`
+	issued  2022-10-20;
+	changeset [
+		item "New `LINQ::DSL` module to provide a function-based syntax for working with LINQ."^^Addition;
+	].
