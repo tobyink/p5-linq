@@ -1,7 +1,7 @@
 # LINQ
 
 [![MetaCPAN](https://img.shields.io/cpan/v/LINQ.svg)](https://metacpan.org/release/LINQ)
-![Licence](https://img.shields.io/cpan/l/LINQ)
+[![Licence](https://img.shields.io/cpan/l/LINQ)](https://metacpan.org/dist/LINQ/source/LICENSE)
 [![Issues](https://img.shields.io/github/issues/tobyink/p5-linq)](https://github.com/tobyink/p5-linq/issues)
 [![CI](https://github.com/tobyink/p5-linq/workflows/CI/badge.svg)](https://github.com/tobyink/p5-linq/actions)
 [![Coveralls](https://coveralls.io/repos/tobyink/p5-linq/badge.svg?branch=master&amp;service=github)](https://coveralls.io/github/tobyink/p5-linq)
