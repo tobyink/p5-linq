@@ -502,6 +502,11 @@ This combines multiple hashrefs into a single hashref and then converts
 that to a blessed object using L<Object::Adhoc>. If the hashrefs contain
 overlapping keys, the first one "wins".
 
+=begin Pod::Coverage
+
+=item C<HashSmush>
+
+=end Pod::Coverage
 
 =head2 C<< :join >>
 
